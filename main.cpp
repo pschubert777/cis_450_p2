@@ -48,42 +48,44 @@ public:
         
     };
     void job_assignments(){
-       
+        
         int i =0, tmp_small=num_small_jobs, tmp_medium=num_medium_jobs, tmp_large=num_large_jobs, arrival_time =0;
-        int current_arrival_lower_seed = 2 ;
-        int currrent_arrival_upper_seed = 5;
+        // lower and upper seed
+        int current_arrival_lower_seed = 2,currrent_arrival_upper_seed = 5;
+        job_sizes j;
         
         while (i <total_jobs) {
             // calculate the arrival time
             arrival_time = calculate_arrival_time(current_arrival_lower_seed, currrent_arrival_upper_seed);
+            j = assign_job_type(tmp_small, tmp_medium, tmp_large);
             
-            if (tmp_small >0 && tmp_medium>0 && tmp_large>0) {
-              
-            }
-            else if (tmp_small >0 && tmp_medium>0){
-                
-            }
-            else if (tmp_small >0 && tmp_large>0){
-                
-            }
-            else if (tmp_medium >0 && tmp_large>0){
-                
-            }
-            else if (tmp_small >0){
-                
-            }
-            else if (tmp_medium>0){
-                
-            }
-            else if (tmp_large>0){
-                
-            }
-            
-            
+            i++;
         }
         
         
     }
+    
+    job_sizes assign_job_type(int& tmp_small, int& tmp_medium, int& tmp_large){
+        job_sizes tmp_val;
+        
+        // select the job type
+        if (tmp_small >0 && tmp_medium>0 && tmp_large>0) { tmp_val =job_sizes(rand()%3); }
+        else if (tmp_small >0 && tmp_medium>0){tmp_val = job_sizes(rand()%2); }
+        else if (tmp_small >0 && tmp_large>0){ tmp_val = (rand()%2==0)? small: large ;}
+        else if (tmp_medium >0 && tmp_large>0){ tmp_val = job_sizes(rand()%2+1);}
+        else if (tmp_small >0){ tmp_val = small; }
+        else if (tmp_medium>0){ tmp_val = medium;}
+        else { tmp_val = large;}
+        
+        // subtract the number of available jobs, will update due to pass by reference
+        
+        if (tmp_val== large) { tmp_large-=1; }
+        else if (tmp_val == medium){ tmp_medium-=1;}
+        else{ tmp_large-=1; }
+        
+        return tmp_val;
+    }
+    
     int calculate_arrival_time(int &current_arrival_lower_seed, int &current_arrival_upper_seed){
         
        int arrival_result=rand()%current_arrival_lower_seed + current_arrival_upper_seed;
@@ -93,6 +95,11 @@ public:
         
         return arrival_result;
         
+    }
+    
+    int calculate_run_time(){
+        
+        return 0;
     }
     
     
