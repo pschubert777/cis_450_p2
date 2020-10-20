@@ -59,6 +59,7 @@ public:
             arrival_time = calculate_arrival_time(current_arrival_lower_seed, currrent_arrival_upper_seed);
             j = assign_job_type(tmp_small, tmp_medium, tmp_large);
             run_time = calculate_run_time(j);
+            
             i++;
         }
         
@@ -96,7 +97,6 @@ public:
         return arrival_result;
         
     }
-    
     int calculate_run_time(const job_sizes & j){
         int run_time=0;
         if (j == large) {
@@ -110,6 +110,21 @@ public:
         }
         
         return run_time;
+    }
+    // method for calculating the code sizes
+    int calculate_code_size(const job_sizes &j){
+        int code_size=0;
+               if (j == large) {
+                  code_size = rand()%41+40;
+               }
+               else if (j==medium){
+                   code_size = rand()%61+60;
+               }
+               else{
+                    code_size = rand()%101+120;
+               }
+               
+        return code_size;
     }
     
     
