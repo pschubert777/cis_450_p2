@@ -49,16 +49,16 @@ public:
     };
     void job_assignments(){
         
-        int i =0, tmp_small=num_small_jobs, tmp_medium=num_medium_jobs, tmp_large=num_large_jobs, arrival_time =0;
+        int i =0, tmp_small=num_small_jobs, tmp_medium=num_medium_jobs, tmp_large=num_large_jobs, arrival_time =0, run_time;
         // lower and upper seed
-        int current_arrival_lower_seed = 2,currrent_arrival_upper_seed = 5;
+        int current_arrival_lower_seed = 4,currrent_arrival_upper_seed = 2;
         job_sizes j;
         
         while (i <total_jobs) {
             // calculate the arrival time
             arrival_time = calculate_arrival_time(current_arrival_lower_seed, currrent_arrival_upper_seed);
             j = assign_job_type(tmp_small, tmp_medium, tmp_large);
-            
+            run_time = calculate_run_time(j);
             i++;
         }
         
@@ -97,9 +97,19 @@ public:
         
     }
     
-    int calculate_run_time(){
+    int calculate_run_time(const job_sizes & j){
+        int run_time=0;
+        if (j == large) {
+            run_time = rand()%3+24;
+        }
+        else if (j==medium){
+             run_time = rand()%3+9;
+        }
+        else{
+             run_time = rand()%3+4;
+        }
         
-        return 0;
+        return run_time;
     }
     
     
