@@ -77,7 +77,7 @@ public:
         else if (tmp_medium>0){ tmp_val = medium;}
         else { tmp_val = large;}
         
-        // subtract the number of available jobs, will update due to pass by reference
+        // subtract the number of available job types. Will update due to pass by reference
         
         if (tmp_val== large) { tmp_large-=1; }
         else if (tmp_val == medium){ tmp_medium-=1;}
