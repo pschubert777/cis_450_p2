@@ -62,10 +62,8 @@ public:
             
             i++;
         }
-        
-        
     }
-    
+
     job_sizes assign_job_type(int& tmp_small, int& tmp_medium, int& tmp_large){
         job_sizes tmp_val;
         
