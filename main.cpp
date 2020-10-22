@@ -14,12 +14,11 @@
 #include <iostream>
 using namespace  std;
 
-enum job_sizes {small =0, medium =1, large = 2};
+enum job_type {small =0, medium =1, large = 2};
 
 struct job{
     int job_id;
     int job_arrival_time;
-	string job_type;
 };
 
 struct job_details {
@@ -27,6 +26,7 @@ struct job_details {
 	int running_time; // generate running time. Small == 5 +/- 1, Medium == 10 +/- 1, Large == 25 +/-1
 	int code_size; // generate code size. Small == 60 +/- 20, Medium == 90 +/- 30, Large == 170 +/-50
 	int stack_size; // generate stack size. Small == 30 +/- 10, Medium == 60 +/- 20, Large == 90 +/-30
+    job_type type;
 };
 
 struct heap_info {
@@ -41,6 +41,7 @@ private:
     int num_small_jobs;
     int num_medium_jobs;
     int num_large_jobs;
+    vector<job_details> jobs;
     
 public:
     PCB(const double &small_job_distribution, const double &medium_job_distribution, const double &large_job_distribution, const int &total_run_time){
@@ -61,31 +62,40 @@ public:
         
         
     };
-    void job_assignments(){
+    void job_assignments(vector<job> &queue){
         
         int i =0, tmp_small=num_small_jobs, tmp_medium=num_medium_jobs, tmp_large=num_large_jobs, arrival_time =0, run_time;
         // lower and upper seed
         int current_arrival_lower_seed = 4,currrent_arrival_upper_seed = 2;
-        job_sizes j;
+        job_type j;
         
         while (i <total_jobs) {
+            job_details new_job;
+            job new_job_for_queue;
             // calculate the arrival time
             arrival_time = calculate_arrival_time(current_arrival_lower_seed, currrent_arrival_upper_seed);
             j = assign_job_type(tmp_small, tmp_medium, tmp_large);
             run_time = calculate_run_time(j);
+            //calculate  stack size method should go here
             
+            
+            //calculate heap elements
+            
+            
+            jobs.push_back(new_job);
+            queue.push_back(new_job_for_queue);
             i++;
         }
     }
 
-    job_sizes assign_job_type(int& tmp_small, int& tmp_medium, int& tmp_large){
-        job_sizes tmp_val;
+    job_type assign_job_type(int& tmp_small, int& tmp_medium, int& tmp_large){
+        job_type tmp_val;
         
         // select the job type
-        if (tmp_small >0 && tmp_medium>0 && tmp_large>0) { tmp_val =job_sizes(rand()%3); }
-        else if (tmp_small >0 && tmp_medium>0){tmp_val = job_sizes(rand()%2); }
+        if (tmp_small >0 && tmp_medium>0 && tmp_large>0) { tmp_val =job_type(rand()%3); }
+        else if (tmp_small >0 && tmp_medium>0){tmp_val = job_type(rand()%2); }
         else if (tmp_small >0 && tmp_large>0){ tmp_val = (rand()%2==0)? small: large ;}
-        else if (tmp_medium >0 && tmp_large>0){ tmp_val = job_sizes(rand()%2+1);}
+        else if (tmp_medium >0 && tmp_large>0){ tmp_val = job_type(rand()%2+1);}
         else if (tmp_small >0){ tmp_val = small; }
         else if (tmp_medium>0){ tmp_val = medium;}
         else { tmp_val = large;}
@@ -109,12 +119,12 @@ public:
         return arrival_result;
         
     }
-    int calculate_run_time(const job_sizes & j){
+    int calculate_run_time(const job_type& type){
         int run_time=0;
-        if (j == large) {
+        if (type == large) {
             run_time = rand()%3+24;
         }
-        else if (j==medium){
+        else if (type==medium){
              run_time = rand()%3+9;
         }
         else{
@@ -124,12 +134,12 @@ public:
         return run_time;
     }
     // method for calculating the code sizes
-    int calculate_code_size(const job_sizes &j){
+    int calculate_code_size(const job_type &type){
         int code_size=0;
-               if (j == large) {
+               if (type == large) {
                   code_size = rand()%41+40;
                }
-               else if (j==medium){
+               else if (type==medium){
                    code_size = rand()%61+60;
                }
                else{
@@ -143,7 +153,7 @@ public:
 	// Pre-condition: What do input do you need for the function to work
 	// Post-condition: What is the end result of the function or what do you get out of the function
 	// Author: Nathan Carey
-	int calculate_stack_size(int jobID) {
+	int calculate_stack_size(const job_type &type) {
 
 	}
 
@@ -152,7 +162,7 @@ public:
 	// Pre-condition: What do input do you need for the function to work
 	// Post-condition: What is the end result of the function or what do you get out of the function
 	// Author: Nathan Carey
-	int calculate_heap_elements(int jobID) {
+	int calculate_heap_elements(const job_type &type) {
 
 	}
 
