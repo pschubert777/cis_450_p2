@@ -76,10 +76,10 @@ public:
             arrival_time = calculate_arrival_time(current_arrival_lower_seed, currrent_arrival_upper_seed);
             j = assign_job_type(tmp_small, tmp_medium, tmp_large);
             run_time = calculate_run_time(j);
-            //calculate  stack size method should go here
+            //**calculate stack size method should go here**
             
             
-            //calculate heap elements
+            //**calculate heap elements should go here**
             
             
             jobs.push_back(new_job);
