@@ -19,6 +19,7 @@ enum job_sizes {small =0, medium =1, large = 2};
 struct job{
     int job_id;
     int job_arrival_time;
+	string job_type;
 };
 
 struct job_details {
@@ -138,13 +139,30 @@ public:
         return code_size;
     }
     
-    // method for calculating stack size
+	// Description: method for calculating stack size.
+	// Pre-condition: What do input do you need for the function to work
+	// Post-condition: What is the end result of the function or what do you get out of the function
+	// Author: Nathan Carey
+	int calculate_stack_size(int jobID) {
 
-	// method for calculating heap element information
-	// including: element allocation and element arrival time
-    
+	}
 
-	// method for printing out job information to file
+
+	// Description: method for calculating heap element information
+	// Pre-condition: What do input do you need for the function to work
+	// Post-condition: What is the end result of the function or what do you get out of the function
+	// Author: Nathan Carey
+	int calculate_heap_elements(int jobID) {
+
+	}
+
+	// Description: method for printing out job information to file
+	// Pre-condition: What do input do you need for the function to work
+	// Post-condition: What is the end result of the function or what do you get out of the function
+	// Author: Nathan Carey
+	void print_job_info() {
+
+	}
 };
 
 int main() {
