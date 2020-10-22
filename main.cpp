@@ -11,6 +11,7 @@
 #include <string>
 #include <queue>
 #include <vector>
+#include <iostream>
 using namespace  std;
 
 enum job_sizes {small =0, medium =1, large = 2};
@@ -18,6 +19,18 @@ enum job_sizes {small =0, medium =1, large = 2};
 struct job{
     int job_id;
     int job_arrival_time;
+};
+
+struct job_details {
+	int job_id; // will grab id from job struct
+	int running_time; // generate running time. Small == 5 +/- 1, Medium == 10 +/- 1, Large == 25 +/-1
+	int code_size; // generate code size. Small == 60 +/- 20, Medium == 90 +/- 30, Large == 170 +/-50
+	int stack_size; // generate stack size. Small == 30 +/- 10, Medium == 60 +/- 20, Large == 90 +/-30
+};
+
+struct heap_info {
+	int allocation; // the amount of memory this element takes up
+	int arrival_time; // time that this element will be processed
 };
 
 class PCB{
@@ -125,8 +138,13 @@ public:
         return code_size;
     }
     
+    // method for calculating stack size
+
+	// method for calculating heap element information
+	// including: element allocation and element arrival time
     
-    
+
+	// method for printing out job information to file
 };
 
 int main() {
