@@ -63,18 +63,22 @@ public:
         
         
     };
+    // Description: method for randomly assigning jobs
+    // Pre-condition: a valid vector of type job struct
+    // Post-condition: creats new jobs with unique id's and creats for each job a job struct (stored in queue) and job_details struct (stored in jobs struct private variable), and witin the job_details a vector of heap info to detail the allocation and arrival time of the heap elements
+    // Author: Peter Schubert
     void job_assignments(vector<job> &queue){
         
         int i =0, tmp_small=num_small_jobs, tmp_medium=num_medium_jobs, tmp_large=num_large_jobs, arrival_time =0, run_time;
         // lower and upper seed
-        int current_arrival_lower_seed = 4,currrent_arrival_upper_seed = 2;
+        int range_span = 5,initial_value_range = 1;
         job_type j;
         
         while (i <total_jobs) {
             job_details new_job;
             job new_job_for_queue;
             // calculate the arrival time
-            arrival_time = calculate_arrival_time(current_arrival_lower_seed, currrent_arrival_upper_seed);
+            arrival_time = calculate_arrival_time(range_span, initial_value_range);
             j = assign_job_type(tmp_small, tmp_medium, tmp_large);
             run_time = calculate_run_time(j);
             //**calculate stack size method should go here**
@@ -89,6 +93,10 @@ public:
         }
     }
 
+    // Description: method for  aassigning job types
+    // Pre-condition: the number of remaining small, medium, and large jobs
+    // Post-condition: a randomly assign job type and return the type that was selected based on the number (distribution of each type remaning)
+    // Author: Peter Schubert
     job_type assign_job_type(int& tmp_small, int& tmp_medium, int& tmp_large){
         job_type tmp_val;
         
@@ -110,16 +118,24 @@ public:
         return tmp_val;
     }
     
-    int calculate_arrival_time(int &current_arrival_lower_seed, int &current_arrival_upper_seed){
+    // Description: method for calculating  the arrival time of a job
+    // Pre-condition: range span, initial value range
+    // Post-condition: returns the arrival time result, based on an inital range of time units 1-5, and increment by 3
+    // Author: Peter Schubert
+    int calculate_arrival_time(const int &range_span, int &initial_value_range){
         
-       int arrival_result=rand()%current_arrival_lower_seed + current_arrival_upper_seed;
+       int arrival_result=rand()%range_span+ initial_value_range;
         
-       current_arrival_upper_seed+=3;
-       current_arrival_lower_seed+=3;
+        initial_value_range+=3;
         
         return arrival_result;
         
     }
+    
+    // Description: method for calculating run time
+    // Pre-condition: a valid job type
+    // Post-condition: returns a randomly assigned run time for a job based on the job type
+    // Author: Peter Schubert
     int calculate_run_time(const job_type& type){
         int run_time=0;
         if (type == large) {
@@ -134,7 +150,10 @@ public:
         
         return run_time;
     }
-    // method for calculating the code sizes
+    // Description: method for calculating code size
+    // Pre-condition: a valid job type
+    // Post-condition: returns the code size of the job based on the job type
+    // Author: Peter Schubert
     int calculate_code_size(const job_type &type){
         int code_size=0;
                if (type == large) {
