@@ -26,6 +26,7 @@ struct job_details {
 	int running_time; // generate running time. Small == 5 +/- 1, Medium == 10 +/- 1, Large == 25 +/-1
 	int code_size; // generate code size. Small == 60 +/- 20, Medium == 90 +/- 30, Large == 170 +/-50
 	int stack_size; // generate stack size. Small == 30 +/- 10, Medium == 60 +/- 20, Large == 90 +/-30
+	vector<heap_info> heap; // each index is a heap element holding heap specific info
     job_type type;
 };
 
@@ -154,17 +155,90 @@ public:
 	// Post-condition: What is the end result of the function or what do you get out of the function
 	// Author: Nathan Carey
 	int calculate_stack_size(const job_type &type) {
+		int stack_size = 0;
 
+		if (type == large) {
+			stack_size = rand() % 21 + 20;
+		}
+		else if (type == medium) {
+			stack_size = rand() % 41 + 40;
+		}
+		else {
+			stack_size = rand() % 61 + 60;
+		}
+
+		return stack_size;
 	}
 
 
 	// Description: method for calculating heap element information
-	// Pre-condition: What do input do you need for the function to work
-	// Post-condition: What is the end result of the function or what do you get out of the function
+	// Pre-condition: Needs a struct object of heap_info. Empty Struct object needs to be created beforehand!!!
+	// Post-condition: return the number of heap elements for this job, assign values to job_heap object for allocation and arrival_time
 	// Author: Nathan Carey
-	int calculate_heap_elements(const job_type &type) {
+	int calculate_num_heap_elements(const job_type &type, job_details job_details, heap_info heap_element) {
+		int num_heap_elements = 0; // return value
+
+		if (type == large) {
+			num_heap_elements = job_details.running_time * 250;
+		}
+		else if (type == medium) {
+			num_heap_elements = job_details.running_time * 100;
+		}
+		else {
+			num_heap_elements = job_details.running_time * 50;
+		}
+		
+		// add the random allocation size of heap element to the object, as well as add that object into the vector of heap_info in job_details.
+		for (int i = 0; i <= num_heap_elements; i++) { // should run for # of heap elements.
+			heap_element.allocation = rand() % 21 + 30;
+			job_details.heap.push_back(heap_element);
+		}
 
 	}
+
+	// Description: method for calculating heap element information
+	// Pre-condition: needs a job_details object to already have its vector of heap_info created
+	// Post-condition: return jobs arrival time.
+	// Author: Nathan Carey
+	int calculate_heap_time(job_details job_info) {
+		/* Notes:
+			-heap elements lifetime = duration of heap element. From 1 to end of run time
+			-lifetime randomly distibuted across heap elements
+			-# of heap elements allocated evenly across run time. This is # heap elements / run time. e.g. 250 elements over 5 time units == 250 / 5 = 50 elements per time unit
+		
+			- how is this done?
+			--randomly choose each duration per index of vector. Until # of that duration is 0
+		*/
+		vector<int> duration; // will hold an index of each time unit within run time
+		
+		int jobs_per_time = 0;
+		jobs_per_time = job_info.heap.size() / job_info.running_time;
+
+		// doing in descending order to use .push_back function
+		for (int i = job_info.running_time; i >= 0; i--) {
+			duration.push_back(jobs_per_time); // allocates # heap elements per time unit. (time unit = index of duration)
+		}
+		// post: -The number of indexes should equal the run time. Each index should contain the numebr of heap elements per that time unit. Should be evenly distributed
+
+		/* Notes:
+		-randomly select an index from duration and assign that index to heap.arrival time.
+		- then decrement the amount of the index of duration	
+		
+		*/
+		int random_duration = 0;
+		for (int j = 0; j < job_info.heap.size(); j++) {
+			random_duration = rand() % 1 + duration.size(); // random number form range of 1 to number of indecies in duration == number of time units
+
+			job_info.heap[j].arrival_time = random_duration;
+			duration[random_duration]--;
+
+			if (duration[random_duration] == 0) { // need to check if that index has been used elements per time times
+				
+			}
+		}
+
+	}
+
 
 	// Description: method for printing out job information to file
 	// Pre-condition: What do input do you need for the function to work
