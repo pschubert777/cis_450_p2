@@ -21,6 +21,10 @@ struct job{
     int job_arrival_time;
 };
 
+struct heap_info {
+    int allocation; // the amount of memory this element takes up
+    int arrival_time; // time that this element will be processed
+};
 struct job_details {
 	int job_id; // will grab id from job struct
 	int running_time; // generate running time. Small == 5 +/- 1, Medium == 10 +/- 1, Large == 25 +/-1
@@ -30,10 +34,7 @@ struct job_details {
     job_type type;
 };
 
-struct heap_info {
-	int allocation; // the amount of memory this element takes up
-	int arrival_time; // time that this element will be processed
-};
+
 
 class PCB{
 private:
