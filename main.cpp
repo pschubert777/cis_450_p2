@@ -66,14 +66,14 @@ public:
         
         int i =0, tmp_small=num_small_jobs, tmp_medium=num_medium_jobs, tmp_large=num_large_jobs, arrival_time =0, run_time;
         // lower and upper seed
-        int current_arrival_lower_seed = 4,currrent_arrival_upper_seed = 2;
+        int range_span = 5,initial_value_range = 1;
         job_type j;
         
         while (i <total_jobs) {
             job_details new_job;
             job new_job_for_queue;
             // calculate the arrival time
-            arrival_time = calculate_arrival_time(current_arrival_lower_seed, currrent_arrival_upper_seed);
+            arrival_time = calculate_arrival_time(range_span, initial_value_range);
             j = assign_job_type(tmp_small, tmp_medium, tmp_large);
             run_time = calculate_run_time(j);
             //**calculate stack size method should go here**
@@ -109,12 +109,11 @@ public:
         return tmp_val;
     }
     
-    int calculate_arrival_time(int &current_arrival_lower_seed, int &current_arrival_upper_seed){
+    int calculate_arrival_time(const int &range_span, int &initial_value_range){
         
-       int arrival_result=rand()%current_arrival_lower_seed + current_arrival_upper_seed;
+       int arrival_result=rand()%range_span+ initial_value_range;
         
-       current_arrival_upper_seed+=3;
-       current_arrival_lower_seed+=3;
+        initial_value_range+=3;
         
         return arrival_result;
         
