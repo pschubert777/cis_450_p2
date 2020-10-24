@@ -219,9 +219,9 @@ public:
 
 	// Description: method for calculating heap element information
 	// Pre-condition: needs a job_details object to already have its vector of heap_info created
-	// Post-condition: return jobs arrival time.
+	// Post-condition: assigns jobs heap elements arrival times.
 	// Author: Nathan Carey
-	int calculate_heap_time(job_details job_info) {
+	void calculate_heap_time(job_details job_info) {
 		/* Notes:
 			-heap elements lifetime = duration of heap element. From 1 to end of run time
 			-lifetime randomly distibuted across heap elements
@@ -264,6 +264,7 @@ public:
 			duration[random_duration]--; // decrement one from the amount of elements that can have this duration length
 		}
 
+		return;
 	}
 
 
