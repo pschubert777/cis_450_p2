@@ -26,6 +26,7 @@ struct heap_info {
     int allocation; // the amount of memory this element takes up
     int arrival_time; // time that this element will be processed
 };
+
 struct job_details {
 	int job_id; // will grab id from job struct
 	int running_time; // generate running time. Small == 5 +/- 1, Medium == 10 +/- 1, Large == 25 +/-1
@@ -243,8 +244,7 @@ public:
 
 		/* Notes:
 		-randomly select an index from duration and assign that index to heap[i].arrival time.
-		-then decrement the amount of the index of duration	
-		
+		-then decrement the amount of the index of duration
 		*/
 		int random_duration = 0;
 		for (int j = 0; j < job_info.heap.size(); j++) {
