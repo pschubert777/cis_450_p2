@@ -12,6 +12,7 @@
 #include <queue>
 #include <vector>
 #include <iostream>
+#include <fstream>
 using namespace  std;
 
 enum job_type {small =0, medium =1, large = 2};
@@ -241,20 +242,26 @@ public:
 		// post: -The number of indexes should equal the run time. Each index should contain the numebr of heap elements per that time unit. Should be evenly distributed
 
 		/* Notes:
-		-randomly select an index from duration and assign that index to heap.arrival time.
-		- then decrement the amount of the index of duration	
+		-randomly select an index from duration and assign that index to heap[i].arrival time.
+		-then decrement the amount of the index of duration	
 		
 		*/
 		int random_duration = 0;
 		for (int j = 0; j < job_info.heap.size(); j++) {
-			random_duration = rand() % 1 + duration.size(); // random number form range of 1 to number of indecies in duration == number of time units
+			random_duration = rand() % 1 + duration.size(); // random number from range of 1 to number of indecies in duration == number of time units
 
 			job_info.heap[j].arrival_time = random_duration;
-			duration[random_duration]--;
 
-			if (duration[random_duration] == 0) { // need to check if that index has been used elements per time times
-				
+			if (duration[random_duration] != 0) { // need to check if that index has been used (elements per time) times
+				job_info.heap[j].arrival_time = random_duration;
 			}
+			else {
+				while (random_duration == 0) { // random until we get a new duration that is not 0. Not very efficient.
+					random_duration = rand() % 1 + duration.size();
+				}
+				job_info.heap[j].arrival_time = random_duration;
+			}
+			duration[random_duration]--; // decrement one from the amount of elements that can have this duration length
 		}
 
 	}
@@ -265,7 +272,43 @@ public:
 	// Post-condition: What is the end result of the function or what do you get out of the function
 	// Author: Nathan Carey
 	void print_job_info() {
+		ofstream out_file;
+		out_file.open("test_file.txt");
+		
 
+		if (!out_file) {
+			cout << "Could not open output file" << endl;
+			exit(1);
+		}
+		for (int i = 0; i < jobs.size(); i++) { // using PCB jobs vector 
+			int heap_element_factor = 0;
+			if (jobs[i].type == large) {
+				heap_element_factor = 250;
+			}
+			else if (jobs[i].type == medium) {
+				heap_element_factor = 100;
+			}
+			else {
+				heap_element_factor = 50;
+			}
+
+			int jobs_per_time = 0; 
+			jobs_per_time = jobs[i].heap.size() / jobs[i].running_time;
+
+			// NOTE: not showing "# memeory units allocate for all # time units" yet.
+			cout << jobs[i].type << " job" << endl;
+			cout << "Run Time: " << jobs[i].running_time << " time units" << endl;
+			cout << "Code Size: " << jobs[i].code_size << " memory" << endl;
+			cout << "Stack Size: " << jobs[i].stack_size << " memory units" << endl;
+			cout << "Heap Elements: " << jobs[i].running_time << " * " << heap_element_factor << " = " << jobs[i].heap.size() << " heap elements" << endl;
+			cout << jobs_per_time << " heap elements arrive each time unit" << endl << endl;
+
+			for (int j = 0; j < jobs[i].heap.size(); j++) {
+				// NOTE: not showing memory units lifetime still
+				cout << "Heap element " << j << ": " << jobs[i].heap[j].allocation << "\t" << jobs[i].heap[j].arrival_time << " time unts" << endl;
+			}
+
+		}
 	}
 };
 
