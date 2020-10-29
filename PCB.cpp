@@ -7,6 +7,7 @@
 //
 
 #include "PCB.h"
+#include <time.h>
 
 
 
@@ -59,7 +60,7 @@ void PCB:: job_assignments(vector<job> &queue){
         new_job.stack_size= calculate_stack_size(new_job.type);
         //**calculate heap elements should go here**
         calculate_num_heap_elements(new_job.type, new_job);
-        calculate_heap_time(new_job);
+        calculate_heap_time(new_job, new_job_for_queue.job_arrival_time);
         
 
         
@@ -87,7 +88,7 @@ job_type PCB:: assign_job_type(int& tmp_small, int& tmp_medium, int& tmp_large){
     
     if (tmp_val== large) { tmp_large-=1; }
     else if (tmp_val == medium){ tmp_medium-=1;}
-    else{ tmp_large-=1; }
+    else{ tmp_small-=1; }
     
     return tmp_val;
 }
@@ -123,13 +124,13 @@ int PCB:: calculate_run_time(const job_type& type){
 int PCB:: calculate_code_size(const job_type &type){
     int code_size=0;
            if (type == large) {
-              code_size = rand()%41+40;
+              code_size = rand()%101+120;
            }
            else if (type==medium){
                code_size = rand()%61+60;
            }
            else{
-                code_size = rand()%101+120;
+                code_size = rand()%41+40;
            }
            
     return code_size;
@@ -140,13 +141,13 @@ int PCB:: calculate_stack_size(const job_type &type) {
     int stack_size = 0;
 
     if (type == large) {
-        stack_size = rand() % 21 + 20;
+        stack_size = rand() % 61 + 60;
     }
     else if (type == medium) {
         stack_size = rand() % 41 + 40;
     }
     else {
-        stack_size = rand() % 61 + 60;
+        stack_size = rand() % 21 + 20;
     }
 
     return stack_size;
@@ -169,7 +170,7 @@ void PCB:: calculate_num_heap_elements(const job_type &type, job_details &job_de
        }
        
        // add the random allocation size of heap element to the object, as well as add that object into the vector of heap_info in job_details.
-       for (int i = 0; i <= num_heap_elements; i++) { // should run for # of heap elements.
+       for (int i = 0; i <= num_heap_elements - 1; i++) { // should run for # of heap elements.
            heap_info heap_element;
            heap_element.allocation = rand() % 21 + 30;
            job_details.heap.push_back(heap_element);
@@ -177,52 +178,60 @@ void PCB:: calculate_num_heap_elements(const job_type &type, job_details &job_de
       
    }
 
-void  PCB:: calculate_heap_time(job_details& job_info) {
-      /* Notes:
-          -heap elements lifetime = duration of heap element. From 1 to end of run time
-          -lifetime randomly distibuted across heap elements
-          -# of heap elements allocated evenly across run time. This is # heap elements / run time. e.g. 250 elements over 5 time units == 250 / 5 = 50 elements per time unit
-      
-          - how is this done?
-          --randomly choose each duration per index of vector. Until # of that duration is 0
-      */
+void  PCB:: calculate_heap_time(job_details& job_info, int job_arrival_time) {
+	// seed the random numbers
+	srand(time(0));
+     
       vector<int> duration; // will hold an index of each time unit within run time
       
-      int jobs_per_time = 0;
+      int jobs_per_time = 0; // the number of jobs per time unit. (aka heap groups)
       jobs_per_time = int(job_info.heap.size() / job_info.running_time);
+		
+     
+	  int heap_group = 0; // used for indexing a heap element
+	  
+	  for (int i = 0; i < job_info.running_time; i++) {
+		  int beginning_time = job_arrival_time + i;
+		  int end_time = job_arrival_time + job_info.running_time;
+		  
+		  for (int j = 0; j < jobs_per_time; j++) {
+			  int random_lifetime = rand() % (end_time - beginning_time) + 1;
+			  job_info.heap[heap_group].arrival_time = beginning_time;
+			  job_info.heap[heap_group].life_time = random_lifetime;
+			  heap_group++;
+		  }
+	  }
 
-      // doing in descending order to use .push_back function
-      for (int i = job_info.running_time; i >= 0; i--) {
-          duration.push_back(jobs_per_time); // allocates # heap elements per time unit. (time unit = index of duration)
-      }
-      // post: -The number of indexes should equal the run time. Each index should contain the numebr of heap elements per that time unit. Should be evenly distributed
-
-      /* Notes:
-      -randomly select an index from duration and assign that index to heap[i].arrival time.
-      -then decrement the amount of the index of duration
-      
-      */
-      int random_duration = 0;
-      for (int j = 0; j < job_info.heap.size(); j++) {
-          random_duration = int(rand() % 1 + duration.size()); // random number from range of 1 to number of indecies in duration == number of time units
-
-          job_info.heap[j].arrival_time = random_duration;
-
-          if (duration[random_duration] != 0) { // need to check if that index has been used (elements per time) times
-              job_info.heap[j].arrival_time = random_duration;
-          }
-          else {
-              while (random_duration == 0) { // random until we get a new duration that is not 0. Not very efficient.
-                  random_duration = int(rand() % 1 + duration.size());
-              }
-              job_info.heap[j].arrival_time = random_duration;
-          }
-          duration[random_duration]--; // decrement one from the amount of elements that can have this duration length
-      }
-
-  
   }
 
+// get helper function for testing.
+// delete after probably
+void PCB::get_stack_size(vector<int>&run_time, vector<job_type>&job_type, vector<int>&stack_size) {
+	for (int i = 0; i < jobs.size(); i++) {
+		job_type.push_back(jobs[i].type);
+		stack_size.push_back(jobs[i].stack_size);
+	}
+}
+
+void PCB::get_heap_elements(vector<int>&run_time, vector<job_type>&job_type, vector<int>&num_heap_elements, vector<vector<heap_info>>&job_heap, vector<int>&running_time) {
+	
+	
+	for (int i = 0; i < jobs.size(); i++) {
+		job_type.push_back(jobs[i].type);
+		running_time.push_back(jobs[i].running_time);
+		num_heap_elements.push_back(jobs[i].heap.size());
+		
+		// index i of heap_element_sizes map to index i of heap_element_time.
+		// will be in reverse order i beleive
+		
+		// these two will be of size heap.size() much greater than jobs.size()!!!
+		// job heap will contain at index i, job[i]'s heap. The heap is a vector of heap_info structs with attributes allocation and arrival time.
+		// for testing we can cycle through job_heap[i][j] and check values are withing bounds at j
+		job_heap.push_back(jobs[i].heap);
+			
+		
+	}
+}
 
 
 void PCB:: print_job_info() {

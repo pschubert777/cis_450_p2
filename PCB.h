@@ -26,6 +26,7 @@ struct job{
 struct heap_info {
     int allocation; // the amount of memory this element takes up
     int arrival_time; // time that this element will be processed
+	int life_time; // the length of a heap elements life
 };
 struct job_details {
     int job_id; // will grab id from job struct
@@ -94,7 +95,15 @@ public:
     // Pre-condition: needs a job_details object to already have its vector of heap_info created
     // Post-condition: assigns jobs heap elements arrival times.
     // Author: Nathan Carey
-    void calculate_heap_time(job_details& job_info);
+    void calculate_heap_time(job_details& job_info, int job_arrival_time);
+
+
+	// helper function for testing
+	void get_stack_size(vector<int>&run_time, vector<job_type>&job_type, vector<int>&stack_size);
+
+	// helper function for testing
+	// get number of heap elements and size of each element
+	void get_heap_elements(vector<int>&run_time, vector<job_type>&job_type, vector<int>&num_heap_elements, vector<vector<heap_info>>&job_heap, vector<int>&running_time);
 
     // Description: method for printing out job information to file
     // Pre-condition: What do input do you need for the function to work
