@@ -54,7 +54,7 @@ public:
     // Post-condition: creats new jobs with unique id's and creats for each job a job struct (stored in queue) and job_details struct (stored in jobs struct private variable), and witin the job_details a vector of heap info to detail the allocation and arrival time of the heap elements
     // Author: Peter Schubert
     void job_assignments(vector<job> &queue);
-
+   
     // Description: method for  aassigning job types
     // Pre-condition: the number of remaining small, medium, and large jobs
     // Post-condition: a randomly assign job type and return the type that was selected based on the number (distribution of each type remaning)
@@ -104,6 +104,11 @@ public:
 	// helper function for testing
 	// get number of heap elements and size of each element
 	void get_heap_elements(vector<int>&run_time, vector<job_type>&job_type, vector<int>&num_heap_elements, vector<vector<heap_info>>&job_heap, vector<int>&running_time);
+    
+    //helper method for testing
+    void get_num_of_each_job(vector<int>&arr);
+          //helper method for testing
+    void get_run_code_size(vector<int>&run_time,vector<job_type>&job__type, vector<int>&code_size );
 
     // Description: method for printing out job information to file
     // Pre-condition: What do input do you need for the function to work

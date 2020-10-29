@@ -69,8 +69,23 @@ void PCB:: job_assignments(vector<job> &queue){
         i++;
     }
 }
+//helper method for testing
+void PCB:: get_num_of_each_job(vector<int>&num_job){ 
+ 
+    num_job.push_back(num_small_jobs);
+    num_job.push_back(num_medium_jobs);
+    num_job.push_back(num_large_jobs);
+    num_job.push_back(total_jobs);
+}
 
-
+void PCB:: get_run_code_size(vector<int>&run_time,vector<job_type>&job__type, vector<int>&code_size ){
+    for (int i =0; i< jobs.size(); ++i) {
+        run_time.push_back(jobs[i].running_time);
+        job__type.push_back(jobs[i].type);
+        code_size.push_back(jobs[i].code_size);
+        
+    }
+}
 
 job_type PCB:: assign_job_type(int& tmp_small, int& tmp_medium, int& tmp_large){
     job_type tmp_val;
