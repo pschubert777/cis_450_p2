@@ -8,48 +8,28 @@
 
 #ifndef PCB_h
 #define PCB_h
-#include <iostream>
+
 #include <cmath>
-#include <string>
-#include <queue>
-#include <vector>
-#include <iostream>
 #include <fstream>
 #include <time.h>
-using namespace std;
-enum job_type {small =0, medium =1, large = 2};
+#include "MAS.h"
 
-struct job{
-    int job_id;
-    int job_arrival_time;
-};
 
-struct heap_info {
-    int allocation; // the amount of memory this element takes up
-    int arrival_time; // time that this element will be processed
-	int life_time; // the length of a heap elements life
-};
-struct job_details {
-    int job_id; // will grab id from job struct
-    int running_time; // generate running time. Small == 5 +/- 1, Medium == 10 +/- 1, Large == 25 +/-1
-    int code_size; // generate code size. Small == 60 +/- 20, Medium == 90 +/- 30, Large == 170 +/-50
-    int stack_size; // generate stack size. Small == 30 +/- 10, Medium == 60 +/- 20, Large == 90 +/-30
-    vector<heap_info> heap; // each index is a heap element holding heap specific info
-    job_type type;
-};
 
 
 class PCB{
 private:
+    bool lost_object_simulation;
     int total_running_time;
     int total_jobs;
     int num_small_jobs;
     int num_medium_jobs;
     int num_large_jobs;
+    int memory_unit_size;
     vector<job_details> jobs;
     
 public:
-    PCB(const double &small_job_distribution, const double &medium_job_distribution, const double &large_job_distribution, const int &total_run_time){
+    PCB(const double &small_job_distribution, const double &medium_job_distribution, const double &large_job_distribution, const int &total_run_time, const int &memory_unit_size_in, const bool& run_lost_object_simulation){
         //assign total_run_time to total_running_time
         total_running_time = total_run_time;
         
@@ -65,6 +45,9 @@ public:
         //calculate the number of large jobs
         num_large_jobs =  round(total_jobs*(large_job_distribution/100));
         
+        memory_unit_size= memory_unit_size_in;
+        
+        lost_object_simulation = run_lost_object_simulation;
         
         // in the case that total jobs is more than  the jobs combined
         total_jobs = num_medium_jobs+num_small_jobs+num_large_jobs;
@@ -76,9 +59,13 @@ public:
     // Author: Peter Schubert
     void job_assignments(vector<job> &queue){
         
-        int i =0, tmp_small=num_small_jobs, tmp_medium=num_medium_jobs, tmp_large=num_large_jobs;
-        // lower and upper seed
-        int range_span = 5,initial_value_range = 1;
+        int i =0; // number of jobs
+        int tmp_small=num_small_jobs, tmp_medium=num_medium_jobs, tmp_large=num_large_jobs;
+        int range_span = 5,initial_value_range = 1; // range and initial value for arrival times
+        
+        // count the number of each of the jobs to determine every 100th job to be a job simulated with lost objects
+        int count_num_small_jobs =0,  count_num_medium_jobs=0, count_num_large_jobs=0;
+        
         
         while (i <total_jobs) {
             job_details new_job;
@@ -88,10 +75,14 @@ public:
             new_job.job_id=i;
             new_job.type = assign_job_type(tmp_small, tmp_medium, tmp_large);
             
+            //incrment counters if using lost object simulation
+            increment_job_type_counters_for_lost_object(new_job.type, count_num_small_jobs, num_medium_jobs, num_large_jobs);
+            
             
              // calculate the arrival time
             new_job_for_queue.job_id =i;
             new_job_for_queue.job_arrival_time = calculate_arrival_time(range_span, initial_value_range);
+            new_job.job_arrival_time = new_job_for_queue.job_arrival_time;
             
             
            
@@ -104,7 +95,12 @@ public:
             calculate_num_heap_elements(new_job.type, new_job);
             calculate_heap_time(new_job, new_job_for_queue.job_arrival_time);
             
-
+            calculate_memory_unit_size_stack_and_code(new_job);
+            
+            // determine if a particular job will lose all of its heap elements (if 100th element
+            determine_if_job_is_lost_object(new_job,count_num_small_jobs, count_num_medium_jobs, count_num_large_jobs);
+            
+            
             
             jobs.push_back(new_job);
             queue.push_back(new_job_for_queue);
@@ -136,7 +132,42 @@ public:
         
         return tmp_val;
     }
-
+    
+    void calculate_memory_unit_size_stack_and_code(job_details &new_job){
+        
+        new_job.code_memory_units_allocated = ceil(new_job.code_size/double(memory_unit_size));
+        new_job.stack_memory_units_allocated= ceil(new_job.stack_size/double(memory_unit_size));
+    }
+    
+    void determine_if_job_is_lost_object(job_details &new_job, const int& num_small_jobs, const int& num_medium_jobs, const int& num_large_jobs){
+        
+        if (lost_object_simulation && new_job.type== small && num_small_jobs%100 ==0 && num_small_jobs >0 ) {
+            new_job.lost_objects = true;
+        }else if (lost_object_simulation && new_job.type== medium && num_medium_jobs%100 ==0&& num_medium_jobs >0) {
+            new_job.lost_objects = true;
+        }
+        else if (lost_object_simulation && new_job.type== large && num_large_jobs %100 ==0&& num_large_jobs >0) {
+            new_job.lost_objects = true;
+            }
+        else {
+            new_job.lost_objects = false;
+        }
+        
+    }
+    void increment_job_type_counters_for_lost_object(const job_type &type, int &num_small_jobs, int&num_medium_jobs, int &num_large_jobs ){
+        
+        if (lost_object_simulation && type ==small) {
+            num_small_jobs++;
+        }
+        else if (lost_object_simulation && type ==medium){
+            num_medium_jobs++;
+        }
+        else if (lost_object_simulation && type ==large){
+            num_large_jobs++;
+        }
+        
+        
+    }
     
     // Description: method for calculating  the arrival time of a job
     // Pre-condition: range span, initial value range
@@ -234,6 +265,8 @@ public:
         for (int i = 0; i <= num_heap_elements - 1; i++) { // should run for # of heap elements.
             heap_info heap_element;
             heap_element.allocation = rand() % 21 + 30;
+            // added by peter, calculates the memory units needed to be allocated
+            heap_element.heap_memory_units_allocated = ceil(heap_element.allocation/double(memory_unit_size));
             job_details.heap.push_back(heap_element);
         }
        
@@ -266,7 +299,6 @@ public:
                 heap_group++;
             }
         }
-
     }
 
 
@@ -361,14 +393,37 @@ public:
 
          }
      }
+    
+    void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system ){
+        // ***NEED TO FINISH***
+    }
+    
+    void allocate_new_job(const int& job_id, MemoryAllocationSystem &system){
+         // ***NEED TO FINISH***
+    }
+    
+    bool check_heap_deallocation(const int &job_id, const int&heap_element_id, const int& current_time){
+        
+        return  jobs[job_id].heap[heap_element_id].arrival_time+jobs[job_id].heap[heap_element_id].life_time == current_time+1;
+    }
+    bool check_job_deallocation(const int &job_id, const int& current_time){
+        
+        return jobs[job_id].job_arrival_time +jobs[job_id].running_time == current_time+1;
+    }
+    
+    pair<int, int> retrieve_stack_allocated(const int &job_id){
+        
+        return make_pair(jobs[job_id].stack_size, jobs[job_id].stack_memory_units_allocated);
+    }
+    pair<int, int> retrieve_code_allocated(const int &job_id){
+           
+           return make_pair(jobs[job_id].code_size, jobs[job_id].code_memory_units_allocated);
+       }
+    pair<int, int> retrieve_heap_element_allocated(const int &job_id, const int &heap_element_id){
+              
+        return make_pair(jobs[job_id].heap[heap_element_id].allocation, jobs[job_id].heap[heap_element_id].heap_memory_units_allocated);
+          }
 };
-
-
-
-
-
-
-
 
 
 #endif /* PCB_h */
