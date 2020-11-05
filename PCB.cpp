@@ -221,7 +221,7 @@ void  PCB:: calculate_heap_time(job_details& job_info, int job_arrival_time) {
 
 // get helper function for testing.
 // delete after probably
-void PCB::get_stack_size(vector<int>&run_time, vector<job_type>&job_type, vector<int>&stack_size) {
+void PCB::get_stack_size(vector<int>&run_time, vector<job_type>&job_type, vector<int>&stack_size)  {
 	for (int i = 0; i < jobs.size(); i++) {
 		job_type.push_back(jobs[i].type);
 		stack_size.push_back(jobs[i].stack_size);
@@ -234,7 +234,7 @@ void PCB::get_heap_elements(vector<int>&run_time, vector<job_type>&job_type, vec
 	for (int i = 0; i < jobs.size(); i++) {
 		job_type.push_back(jobs[i].type);
 		running_time.push_back(jobs[i].running_time);
-		num_heap_elements.push_back(jobs[i].heap.size());
+		num_heap_elements.push_back(int(jobs[i].heap.size()));
 		
 		// index i of heap_element_sizes map to index i of heap_element_time.
 		// will be in reverse order i beleive
