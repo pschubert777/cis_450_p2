@@ -73,14 +73,16 @@ public:
             
             //assign job id and job type
             new_job.job_id=i;
+            new_job_for_queue.job_id =i;
             new_job.type = assign_job_type(tmp_small, tmp_medium, tmp_large);
             
             //incrment counters if using lost object simulation
             increment_job_type_counters_for_lost_object(new_job.type, count_num_small_jobs, num_medium_jobs, num_large_jobs);
             
+            // set the initial heap  group element starting point at index 0
+            new_job.current_heap_element_group=0;
             
              // calculate the arrival time
-            new_job_for_queue.job_id =i;
             new_job_for_queue.job_arrival_time = calculate_arrival_time(range_span, initial_value_range);
             new_job.job_arrival_time = new_job_for_queue.job_arrival_time;
             

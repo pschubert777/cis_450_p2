@@ -43,6 +43,7 @@ struct job_details {
     
     int code_location; // starting point where the code is allocated
     int stack_location;// starting point where the stack is allocated
+    int current_heap_element_group;
     vector<heap_info> heap; // each index is a heap element holding heap specific info
     job_type type;
 };
