@@ -268,6 +268,79 @@ public:
         return location;
     }
     
+    int bestFit(const int &num_memory_units, const int &job_id){
+        int location = -1;
+        int memory_remaining =0;
+        pair<int, int> new_free_space;
+        map<int, int>:: iterator free_memory_to_erase;
+        
+        for (auto i = best_fit_memory_locations.begin(); i != best_fit_memory_locations.end(); i++){
+            
+            if (num_memory_units >= i->first) {
+                location = i->second;
+                free_memory_to_erase = i;
+                
+                
+                fill_memory_data_structure(i->second, i->second+num_memory_units, job_id);
+                                            
+                // calculate the memory units remaining
+                memory_remaining = calculate_memory_units_remaining(num_memory_units, i->first);
+                // if the memory remaining does not equal 0, then create a new smaller free space
+                if (memory_remaining >0) { new_free_space= make_pair(i->second+num_memory_units, memory_remaining); }
+                
+                break;
+            }
+            
+            
+            
+        }
+        if (location != -1 && memory_remaining>0) {
+                   best_fit_memory_locations.erase(free_memory_to_erase);
+                   best_fit_memory_locations.insert(new_free_space);
+               }
+       else if(location != -1&& memory_remaining ==0){
+                   best_fit_memory_locations.erase(free_memory_to_erase);
+               }
+        
+        return location;
+    }
+    
+    int worstFit(const int &num_memory_units, const int &job_id){
+            int location = -1;
+            int memory_remaining =0;
+            pair<int, int> new_free_space;
+            map<int, int>:: iterator free_memory_to_erase;
+            
+            for (auto i = worst_fit_memory_locations.begin(); i != worst_fit_memory_locations.end(); i++){
+                
+                if (num_memory_units >= i->first) {
+                    location = i->second;
+                    free_memory_to_erase = i;
+                    
+                    
+                    fill_memory_data_structure(i->second, i->second+num_memory_units, job_id);
+                                                
+                    // calculate the memory units remaining
+                    memory_remaining = calculate_memory_units_remaining(num_memory_units, i->first);
+                    // if the memory remaining does not equal 0, then create a new smaller free space
+                    if (memory_remaining >0) { new_free_space= make_pair(i->second+num_memory_units, memory_remaining); }
+                    
+                    break;
+                }
+                
+                
+                
+            }
+            if (location != -1 && memory_remaining>0) {
+                       worst_fit_memory_locations.erase(free_memory_to_erase);
+                       worst_fit_memory_locations.insert(new_free_space);
+                   }
+           else if(location != -1&& memory_remaining ==0){
+                       worst_fit_memory_locations.erase(free_memory_to_erase);
+                   }
+            
+            return location;
+    }
     
 };
 
