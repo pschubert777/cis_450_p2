@@ -342,6 +342,31 @@ public:
             return location;
     }
     
+    
+    void freeFF(const int &starting_location, const int& num_memory_units){
+        
+        pair<int, int>new_deallocated_free_space;
+        
+        for (int i=starting_location; i< starting_location +num_memory_units; ++i) {
+            memory_data_structure[i]= -1;
+        }
+        
+        
+        if (memory_allocation_algorithm_type =="firstFit") {
+            new_deallocated_free_space = make_pair(starting_location, num_memory_units);
+        }
+        else if (memory_allocation_algorithm_type=="nextFit"){
+            new_deallocated_free_space = make_pair(starting_location, num_memory_units);
+            
+        }
+        else if (memory_allocation_algorithm_type=="bestFit"){
+            new_deallocated_free_space = make_pair(num_memory_units, starting_location);
+        }
+        else{
+            new_deallocated_free_space = make_pair(num_memory_units, starting_location);
+        }
+        
+    }
 };
 
 #endif /* MAC_h */
