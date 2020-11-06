@@ -84,7 +84,7 @@ private:
     map<int, int, worst_fit_compare>worst_fit_memory_locations;
     
     // next fit current index for getting the next free space that fits
-    int next_fit_current_index;
+     map<int, int>:: iterator  next_fit_current_index;
     
     //memory_unit_size
     int memory_unit_size;
@@ -113,8 +113,9 @@ public:
         }
         else if (memory_allocation_algorithm_type=="nextFit"){
             //next fit memory algorithm
-            next_fit_current_index =0;
+            
             next_fit_memory_locations.insert(make_pair(0, num_memory_units));
+            next_fit_current_index = next_fit_memory_locations.begin();
         }
         else if(memory_allocation_algorithm_type=="bestFit"){
             //best fit memory algorithm
@@ -193,10 +194,78 @@ public:
         return location;
     }
     int nextFit(const int &num_memory_units, const int &job_id){
+        bool found_spot_in_first_loop= false;
+        
+        int location= -1;
+        int memory_remaining =0;
+        pair<int, int> new_free_space;
+        map<int, int>:: iterator free_memory_to_erase;
+        // first for loop
+        for (auto i = next_fit_current_index; i != next_fit_memory_locations.end(); i++) {
+            if (num_memory_units <= i->second) {
+                location = i->first;
+                free_memory_to_erase = i;
+
+                // fill up the memory data structure with the job id of the job
+                fill_memory_data_structure(i->first, i->first+num_memory_units, job_id);
+                
+                // calculate the memory units remaining
+                memory_remaining = calculate_memory_units_remaining(num_memory_units, i->second);
+                // if the memory remaining does not equal 0, then create a new smaller free space
+                if (memory_remaining >0) { new_free_space= make_pair(i->first+num_memory_units, memory_remaining); }
+                
+                
+                found_spot_in_first_loop = true;
+                next_fit_current_index = i++;
+                
+                break;
+            }
+        }
+       
+        if(found_spot_in_first_loop){
+            for (auto i = next_fit_memory_locations.begin(); i!= next_fit_current_index; i++) {
+                if (num_memory_units <= i->second) {
+                               location = i->first;
+                               free_memory_to_erase = i;
+                               
+                               // fill up the memory data structure with the job id of the job
+                               fill_memory_data_structure(i->first, i->first+num_memory_units, job_id);
+                               
+                               // calculate the memory units remaining
+                               memory_remaining = calculate_memory_units_remaining(num_memory_units, i->second);
+                               // if the memory remaining does not equal 0, then create a new smaller free space
+                               if (memory_remaining >0) { new_free_space= make_pair(i->first+num_memory_units, memory_remaining); }
+                               
+                               break;
+                           }
+            }
+        }
         
         
         
+        if (location != -1 && memory_remaining>0) {
+                  next_fit_memory_locations.erase(free_memory_to_erase);
+                  next_fit_memory_locations.insert(new_free_space);
+                  next_fit_current_index = next_fit_memory_locations.find(new_free_space.first);
+              }
+         else if(location != -1&& memory_remaining ==0){
+             next_fit_memory_locations.erase(free_memory_to_erase);
+                
+             // check if the next index is at the end
+             map<int, int>:: iterator tmp(next_fit_current_index);
+             tmp++;
+             if (tmp == next_fit_memory_locations.end()) {
+                 next_fit_current_index = next_fit_memory_locations.begin();
+             }
+             else{
+                 next_fit_current_index++;
+             }
+             
+              }
         
+        
+        
+        return location;
     }
     
     
