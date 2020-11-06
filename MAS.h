@@ -18,6 +18,10 @@
 using namespace std;
 enum job_type {small =0, medium =1, large = 2};
 
+struct free_memory_details{
+    int size;
+    int starting_index;
+};
 struct job{
     int job_id;
     int job_arrival_time;
@@ -49,13 +53,47 @@ struct job_details {
 };
 class MemoryAllocationSystem {
 private:
-
-    int *memory_data_structure;
+    // memory allocation algorithm type
+    string memory_allocation_algorithm_type;
     
+    // statistics variables
+    vector<int>num_free_requests;
+    vector<int>num_allocation_requests;
+    vector<int>total_num_allocation_operations;
+    vector<int>total_num_free_operations;
+    
+    // free memory locations
+    
+    vector<int>first_fit_memory_locations;
+    vector<int>next_fit_memory_locations;
+    vector<int>best_fit_memory_locations;
+    vector<int>worst_fit_memory_locations;
+    // next fit current index for getting the next free space that fits
+    int next_fit_current_index;
+    
+    //memory_unit_size
+    int memory_unit_size;
+    
+    //number memory units
+    int num_memory_units;
+    
+    // memory data structure
+    vector<int> memory_data_structure;
+     
     
 public:
-    
-    
+    MemoryAllocationSystem(const int &number_memory_units_in, const int &memory_unit_size_in, const string &memory_allocation_algorithm_type_in){
+        // assign respective private attributes
+        memory_unit_size = memory_unit_size_in;
+        num_memory_units = number_memory_units_in;
+        memory_allocation_algorithm_type = memory_allocation_algorithm_type_in;
+        
+        //resize the vector from empty to the size containing the respective number of memory units
+        memory_data_structure.resize(num_memory_units, -1);
+    }
+    int MallocFF(const int &num_memory_units, const int &job_id){
+        return 0;
+    }
     
 };
 
