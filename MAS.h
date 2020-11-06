@@ -47,6 +47,9 @@ struct job_details {
     job_type type;
 };
 class MemoryAllocationSystem {
+private:
+
+    int *memory_data_structure;
     
     
 public:
