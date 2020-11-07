@@ -343,27 +343,105 @@ public:
     }
     
     
-    void freeFF(const int &starting_location, const int& num_memory_units){
-        
+    void deallocate_firstFit_nextFit(const int& starting_location, const int & num_memory_units){
         pair<int, int>new_deallocated_free_space;
+        if (memory_allocation_algorithm_type=="firstFit") {
+            new_deallocated_free_space = make_pair(starting_location, num_memory_units);
+            first_fit_memory_locations.insert(new_deallocated_free_space);
+            map<int,int>::iterator inserted_element = first_fit_memory_locations.find(starting_location);
+            map<int,int>::iterator prior_element (inserted_element);
+            map<int,int>::iterator later_element(inserted_element);
+            prior_element--;
+            later_element++;
+            
+            //checking if the element is on the left most end of the memory
+            
+            if (prior_element == first_fit_memory_locations.end() &&later_element==first_fit_memory_locations.end() ) {
+                
+            }
+            else if (prior_element == first_fit_memory_locations.end() && inserted_element->first+inserted_element->second ==later_element->first) {
+                first_fit_memory_locations[inserted_element->first]+=+later_element->second;
+                first_fit_memory_locations.erase(later_element);
+            }
+            //checking if the elmenet is on the right most end of the memory
+            else if (later_element==first_fit_memory_locations.end() && prior_element->first+prior_element->second ==inserted_element->first){
+                first_fit_memory_locations[prior_element->first]+=inserted_element->second;
+                first_fit_memory_locations.erase(inserted_element);
+            }
+            else if (prior_element->first+prior_element->second ==inserted_element->first && inserted_element->first+inserted_element->second ==later_element->first){
+                first_fit_memory_locations[prior_element->first]+=inserted_element->second+later_element->second;
+                first_fit_memory_locations.erase(inserted_element);
+                first_fit_memory_locations.erase(later_element);
+                
+            }
+            else if (prior_element->first+prior_element->second ==inserted_element->first){
+                first_fit_memory_locations[prior_element->first]+=inserted_element->second;
+                first_fit_memory_locations.erase(inserted_element);
+            }
+            else if(inserted_element->first+inserted_element->second ==later_element->first){
+                first_fit_memory_locations[inserted_element->first]+=+later_element->second;
+                first_fit_memory_locations.erase(later_element);
+            }
+        }
+         else {
+            new_deallocated_free_space = make_pair(starting_location, num_memory_units);
+            next_fit_memory_locations.insert(new_deallocated_free_space);
+            map<int,int>::iterator inserted_element = next_fit_memory_locations.find(starting_location);
+            map<int,int>::iterator prior_element (inserted_element);
+            map<int,int>::iterator later_element(inserted_element);
+            prior_element--;
+            later_element++;
+            
+            //checking if the element is on the left most end of the memory
+            
+            if (prior_element == next_fit_memory_locations.end() &&later_element==next_fit_memory_locations.end() ) {
+                
+            }
+            else if (prior_element == next_fit_memory_locations.end() && inserted_element->first+inserted_element->second ==later_element->first) {
+                next_fit_memory_locations[inserted_element->first]+=+later_element->second;
+                next_fit_memory_locations.erase(later_element);
+            }
+            //checking if the elmenet is on the right most end of the memory
+            else if (later_element== next_fit_memory_locations.end() && prior_element->first+prior_element->second ==inserted_element->first){
+                next_fit_memory_locations[prior_element->first]+=inserted_element->second;
+                next_fit_memory_locations.erase(inserted_element);
+            }
+            else if (prior_element->first+prior_element->second ==inserted_element->first && inserted_element->first+inserted_element->second ==later_element->first){
+                next_fit_memory_locations[prior_element->first]+=inserted_element->second+later_element->second;
+                next_fit_memory_locations.erase(inserted_element);
+                next_fit_memory_locations.erase(later_element);
+                
+            }
+            else if (prior_element->first+prior_element->second ==inserted_element->first){
+                next_fit_memory_locations[prior_element->first]+=inserted_element->second;
+                next_fit_memory_locations.erase(inserted_element);
+            }
+            else if(inserted_element->first+inserted_element->second ==later_element->first){
+                next_fit_memory_locations[inserted_element->first]+=+later_element->second;
+                next_fit_memory_locations.erase(later_element);
+            }
+        }
+
+}
+    void deallocate_bestFit_worstFit(const int& starting_location, const int & num_memory_units){
+        
+        
+        
+    }
+    
+    void freeFF(const int &starting_location, const int& num_memory_units){
         
         for (int i=starting_location; i< starting_location +num_memory_units; ++i) {
             memory_data_structure[i]= -1;
         }
         
         
-        if (memory_allocation_algorithm_type =="firstFit") {
-            new_deallocated_free_space = make_pair(starting_location, num_memory_units);
+        if (memory_allocation_algorithm_type =="firstFit" ||memory_allocation_algorithm_type=="nextFit" ) {
+            deallocate_firstFit_nextFit(starting_location, num_memory_units);
         }
-        else if (memory_allocation_algorithm_type=="nextFit"){
-            new_deallocated_free_space = make_pair(starting_location, num_memory_units);
-            
-        }
-        else if (memory_allocation_algorithm_type=="bestFit"){
-            new_deallocated_free_space = make_pair(num_memory_units, starting_location);
-        }
+ 
         else{
-            new_deallocated_free_space = make_pair(num_memory_units, starting_location);
+            deallocate_bestFit_worstFit(starting_location, num_memory_units);
         }
         
     }
