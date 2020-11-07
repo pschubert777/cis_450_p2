@@ -398,10 +398,36 @@ public:
     
     void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system ){
         // ***NEED TO FINISH***
+        
+        
+        int job_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
+        int size =jobs[job_id].current_heap_element_group+job_size;
+        
+        while (jobs[job_id].current_heap_element_group < size) {
+        system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
+            jobs[job_id].current_heap_element_group++;
+        }
+        
+        
     }
     
     void allocate_new_job(const int& job_id, MemoryAllocationSystem &system){
          // ***NEED TO FINISH***
+        
+        system.MallocFF(jobs[job_id].stack_memory_units_allocated, job_id);
+        system.MallocFF(jobs[job_id].code_memory_units_allocated, job_id);
+        
+        int job_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
+        
+        int size =jobs[job_id].current_heap_element_group+job_size;
+        
+        while (jobs[job_id].current_heap_element_group < size) {
+             system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
+            jobs[job_id].current_heap_element_group++;
+        }
+        
+      
+        
     }
     
     bool check_heap_deallocation(const int &job_id, const int&heap_element_id, const int& current_time){
