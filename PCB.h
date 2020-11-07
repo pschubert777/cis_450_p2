@@ -397,14 +397,14 @@ public:
      }
     
     void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system ){
-        // ***NEED TO FINISH***
+          // ***NEED TO FINISH try catch block if no memory***
         
         
         int job_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
         int size =jobs[job_id].current_heap_element_group+job_size;
         
         while (jobs[job_id].current_heap_element_group < size) {
-        system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
+        jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_location =  system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
             jobs[job_id].current_heap_element_group++;
         }
         
@@ -412,24 +412,33 @@ public:
     }
     
     void allocate_new_job(const int& job_id, MemoryAllocationSystem &system){
-         // ***NEED TO FINISH***
+         // ***NEED TO FINISH try catch block if no memory***
         
-        system.MallocFF(jobs[job_id].stack_memory_units_allocated, job_id);
-        system.MallocFF(jobs[job_id].code_memory_units_allocated, job_id);
+        jobs[job_id].stack_location=  system.MallocFF(jobs[job_id].stack_memory_units_allocated, job_id);
+       jobs[job_id].code_location=  system.MallocFF(jobs[job_id].code_memory_units_allocated, job_id);
         
         int job_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
         
         int size =jobs[job_id].current_heap_element_group+job_size;
         
         while (jobs[job_id].current_heap_element_group < size) {
-             system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
+            jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_location =  system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
             jobs[job_id].current_heap_element_group++;
         }
         
       
         
     }
-    
+    void deallocate_heap(const int& job_id,const int &heap_element_id, MemoryAllocationSystem &system){
+        
+        system.freeFF(jobs[job_id].heap[heap_element_id].heap_location, jobs[job_id].heap[heap_element_id].heap_memory_units_allocated);
+    }
+    void deallocate_job(const int& job_id,  MemoryAllocationSystem &system){
+        
+        system.freeFF(jobs[job_id].stack_location, jobs[job_id].stack_memory_units_allocated);
+         system.freeFF(jobs[job_id].code_location, jobs[job_id].code_memory_units_allocated);
+        
+    }
     bool check_heap_deallocation(const int &job_id, const int&heap_element_id, const int& current_time){
         
         return  jobs[job_id].heap[heap_element_id].arrival_time+jobs[job_id].heap[heap_element_id].life_time == current_time+1;
