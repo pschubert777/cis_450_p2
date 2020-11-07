@@ -28,8 +28,10 @@ private:
     int memory_unit_size;
     vector<job_details> jobs;
     
+    ofstream log;
+    
 public:
-    PCB(const double &small_job_distribution, const double &medium_job_distribution, const double &large_job_distribution, const int &total_run_time, const int &memory_unit_size_in, const bool& run_lost_object_simulation){
+    PCB(const double &small_job_distribution, const double &medium_job_distribution, const double &large_job_distribution, const int &total_run_time, const int &memory_unit_size_in, const bool& run_lost_object_simulation, const string& log_file){
         //assign total_run_time to total_running_time
         total_running_time = total_run_time;
         
@@ -51,6 +53,8 @@ public:
         
         // in the case that total jobs is more than  the jobs combined
         total_jobs = num_medium_jobs+num_small_jobs+num_large_jobs;
+        
+        log.open(log_file);
         
     }
     // Description: method for randomly assigning jobs
@@ -396,26 +400,35 @@ public:
          }
      }
     
-    void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system ){
+    void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system, const int &current_time_unit ){
           // ***NEED TO FINISH try catch block if no memory***
         
         
         int job_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
+        
         int size =jobs[job_id].current_heap_element_group+job_size;
         
         while (jobs[job_id].current_heap_element_group < size) {
         jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_location =  system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
+            
+            log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<jobs[job_id].current_heap_element_group<< " Memory Units Allocated: "<<jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated << endl;
+            
             jobs[job_id].current_heap_element_group++;
         }
         
         
     }
     
-    void allocate_new_job(const int& job_id, MemoryAllocationSystem &system){
+    void allocate_new_job(const int& job_id, MemoryAllocationSystem &system, const int &current_time_unit){
          // ***NEED TO FINISH try catch block if no memory***
         
         jobs[job_id].stack_location=  system.MallocFF(jobs[job_id].stack_memory_units_allocated, job_id);
+        
+        log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Code Memory Units Allocated: "<<jobs[job_id].code_memory_units_allocated<< endl;
+        
        jobs[job_id].code_location=  system.MallocFF(jobs[job_id].code_memory_units_allocated, job_id);
+        
+         log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Stack Memory Units Allocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
         
         int job_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
         
@@ -423,17 +436,22 @@ public:
         
         while (jobs[job_id].current_heap_element_group < size) {
             jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_location =  system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
+            
+            log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<jobs[job_id].current_heap_element_group<< " Memory Units Allocated: "<<jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated << endl;
+            
             jobs[job_id].current_heap_element_group++;
         }
         
       
         
     }
-    void deallocate_heap(const int& job_id,const int &heap_element_id, MemoryAllocationSystem &system){
+    void deallocate_heap(const int& job_id,const int &heap_element_id, MemoryAllocationSystem &system, const int &current_time_unit){
         
         system.freeFF(jobs[job_id].heap[heap_element_id].heap_location, jobs[job_id].heap[heap_element_id].heap_memory_units_allocated);
+        
+        
     }
-    void deallocate_job(const int& job_id,  MemoryAllocationSystem &system){
+    void deallocate_job(const int& job_id,  MemoryAllocationSystem &system, const int &current_time_unit){
         
         system.freeFF(jobs[job_id].stack_location, jobs[job_id].stack_memory_units_allocated);
          system.freeFF(jobs[job_id].code_location, jobs[job_id].code_memory_units_allocated);
@@ -459,7 +477,12 @@ public:
     pair<int, int> retrieve_heap_element_allocated(const int &job_id, const int &heap_element_id){
               
         return make_pair(jobs[job_id].heap[heap_element_id].allocation, jobs[job_id].heap[heap_element_id].heap_memory_units_allocated);
-          }
+    }
+    
+    ~PCB(){
+        log.close();
+        
+    }
 };
 
 
