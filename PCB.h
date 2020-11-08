@@ -107,6 +107,10 @@ public:
             determine_if_job_is_lost_object(new_job,count_num_small_jobs, count_num_medium_jobs, count_num_large_jobs);
             
             
+            //initialize code and stack locations
+            new_job.code_location = -1;
+            new_job.stack_location= -1;
+            
             
             jobs.push_back(new_job);
             queue.push_back(new_job_for_queue);
@@ -273,6 +277,7 @@ public:
             heap_element.allocation = rand() % 21 + 30;
             // added by peter, calculates the memory units needed to be allocated
             heap_element.heap_memory_units_allocated = ceil(heap_element.allocation/double(memory_unit_size));
+            heap_element.heap_location = -1;
             job_details.heap.push_back(heap_element);
         }
        
@@ -402,50 +407,123 @@ public:
     
     void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system, const int &current_time_unit ){
           // ***NEED TO FINISH try catch block if no memory***
-        
-        
-        int job_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
-        
-        int size =jobs[job_id].current_heap_element_group+job_size;
-        
-        while (jobs[job_id].current_heap_element_group < size) {
-        jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_location =  system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
+       
+        try {
+                   int heap_location = -1;
+                   int job_group_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
+                   
+                   int size =jobs[job_id].current_heap_element_group+job_group_size;
+                   int i =jobs[job_id].current_heap_element_group;
+                  
+                   while (i < size) {
+                       
+                     
+                      heap_location =  system.MallocFF(jobs[job_id].heap[i].heap_memory_units_allocated, job_id);
+                       
+                       if (heap_location == -1) {
+                           throw invalid_argument("Memory Allocation System ran out of memory!");
+                       }
+                       else{
+                           jobs[job_id].heap[i].heap_location = heap_location;
+                       }
+                       
+                       log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Allocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
+                       
+                       i++;
+                   }
+                       jobs[job_id].current_heap_element_group = i;
+        } catch (invalid_argument & message) {
             
-            log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<jobs[job_id].current_heap_element_group<< " Memory Units Allocated: "<<jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated << endl;
+            int job_group_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
+            int size =jobs[job_id].current_heap_element_group+job_group_size;
             
-            jobs[job_id].current_heap_element_group++;
+            for (int i =jobs[job_id].current_heap_element_group; i < size; i++) {
+                if (jobs[job_id].heap[i].heap_location != -1) {
+                    system.freeFF(jobs[job_id].heap[i].heap_location, jobs[job_id].heap[i].heap_memory_units_allocated);
+                }
+            }
+            
+            
+            throw invalid_argument("The simulation has ended!");
         }
+       
+     
         
         
     }
     
     void allocate_new_job(const int& job_id, MemoryAllocationSystem &system, const int &current_time_unit){
+        try {
+            
+      
          // ***NEED TO FINISH try catch block if no memory***
-        cout << "Allocating Stack" << endl;
-        jobs[job_id].stack_location=  system.MallocFF(jobs[job_id].stack_memory_units_allocated, job_id);
+        int stack_location =-1, code_location = -1, heap_location = -1;
+        stack_location =  system.MallocFF(jobs[job_id].stack_memory_units_allocated, job_id);
+        if (stack_location == -1) {
+           throw invalid_argument("Memory Allocation System ran out of memory!");
+        }
+        else{
+            jobs[job_id].stack_location = stack_location;
+        }
         
-        log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Code Memory Units Allocated: "<<jobs[job_id].code_memory_units_allocated<< endl;
-        cout << "Allocating Code" << endl;
-       jobs[job_id].code_location=  system.MallocFF(jobs[job_id].code_memory_units_allocated, job_id);
+        log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Code Memory Units Allocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
+       
+        code_location =  system.MallocFF(jobs[job_id].code_memory_units_allocated, job_id);
+        
+        if (code_location==-1) {
+            throw invalid_argument("Memory Allocation System ran out of memory!");
+        }
+        else{
+            jobs[job_id].code_location = code_location;
+        }
         
          log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Stack Memory Units Allocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
         
-        int job_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
+        int job_group_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
         
-        int size =jobs[job_id].current_heap_element_group+job_size;
-        
-        cout << "Allocating Heap" << endl;
-        while (jobs[job_id].current_heap_element_group < size) {
+        int size =jobs[job_id].current_heap_element_group+job_group_size;
+        int i =jobs[job_id].current_heap_element_group;
+       
+        while (i < size) {
             
           
-            jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_location =  system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
+           heap_location =  system.MallocFF(jobs[job_id].heap[i].heap_memory_units_allocated, job_id);
             
-            log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<jobs[job_id].current_heap_element_group<< " Memory Units Allocated: "<<jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated << endl;
+            if (heap_location == -1) {
+                throw invalid_argument("Memory Allocation System ran out of memory!");
+            }
+            else{
+                jobs[job_id].heap[i].heap_location = heap_location;
+            }
             
-            jobs[job_id].current_heap_element_group++;
+            log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Allocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
+            
+            i++;
         }
-        
-      
+            jobs[job_id].current_heap_element_group = i;
+      } catch (invalid_argument & message) {
+                
+          // deallocate (unit of work concept), then throw again to main
+          if (jobs[job_id].stack_location != -1) {
+              system.freeFF(jobs[job_id].stack_location, jobs[job_id].stack_memory_units_allocated);
+          }
+          if (jobs[job_id].code_location != -1) {
+              system.freeFF(jobs[job_id].code_location, jobs[job_id].code_memory_units_allocated);
+          }
+          
+          int job_group_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
+          int size =jobs[job_id].current_heap_element_group+job_group_size;
+          
+          for (int i =jobs[job_id].current_heap_element_group; i < size; i++) {
+              if (jobs[job_id].heap[i].heap_location != -1) {
+                  system.freeFF(jobs[job_id].heap[i].heap_location, jobs[job_id].heap[i].heap_memory_units_allocated);
+              }
+          }
+          
+          
+          throw invalid_argument("The simulation has ended!");
+          
+        }
         
     }
     void deallocate_heap(const int& job_id,const int &heap_element_id, MemoryAllocationSystem &system, const int &current_time_unit){
