@@ -202,7 +202,7 @@ int main() {
 	run_time = duration;
 
 
-	PCB myPCB(small, medium, large, run_time, memory_unit_size, is_lost_objects);
+	PCB myPCB(small, medium, large, run_time, memory_unit_size, is_lost_objects, log_file_name);
 	// queue holds jobs before sim begins
 	myPCB.job_assignments(queue);
 
@@ -246,7 +246,7 @@ int main() {
 		}
 
 		for (int i = 0; i < active_jobs.size(); i++) {
-			if (myPCB.check_job_deallocation(active_jobs[i], myMAS, time_counter)) {
+			if (myPCB.check_job_deallocation(active_jobs[i], time_counter)) {
 				myPCB.deallocate_job(active_jobs[i], myMAS, time_counter);
 			}
 		}
