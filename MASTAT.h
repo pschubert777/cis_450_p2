@@ -20,6 +20,8 @@ struct heap_elements {
 	int heap_element_id;
 };
 
+#define PCB pcb_stat;
+
 class MASTAT {
 private:
 	int number_heap_allocations;
@@ -53,10 +55,12 @@ public:
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
-	int memory_allocated(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements) {
+	int memory_allocated(PCB &pcb, vector<int> &active_jobs, vector<heap_elements> &heap_elements) {
 		int sum_memory;
 
-
+		for (int i = 0; i < active_jobs.size(); i++) {
+			sum_memory+= 
+		}
 
 
 

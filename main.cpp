@@ -9,6 +9,7 @@
 // testing that this worked
 
 #include "PCB.h"
+#include <algorithm>
 
 
 vector<double> request_job_distribtution() {
@@ -150,6 +151,9 @@ string request_algorithm() {
 }
 
 // sort here by arrival time
+bool compare_arrival_times(job j1, job j2) {
+	return(j1.job_arrival_time < j2.job_arrival_time);
+}
 
 
 struct heap_elements {
@@ -208,6 +212,7 @@ int main() {
 
 	// sort here -----------------
 	// need to sort queue here. Have to add my compare function but waiting to talk to peter becaue I need to add it into PCB i beleive and dont want merge conflicts
+	sort(queue.begin(), queue.end(), compare_arrival_times);
 
 	MemoryAllocationSystem myMAS(num_memory_units, memory_unit_size, algorithm_to_run);
 	time_counter = 0;
