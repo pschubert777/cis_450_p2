@@ -421,11 +421,11 @@ public:
     
     void allocate_new_job(const int& job_id, MemoryAllocationSystem &system, const int &current_time_unit){
          // ***NEED TO FINISH try catch block if no memory***
-        
+        cout << "Allocating Stack" << endl;
         jobs[job_id].stack_location=  system.MallocFF(jobs[job_id].stack_memory_units_allocated, job_id);
         
         log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Code Memory Units Allocated: "<<jobs[job_id].code_memory_units_allocated<< endl;
-        
+        cout << "Allocating Code" << endl;
        jobs[job_id].code_location=  system.MallocFF(jobs[job_id].code_memory_units_allocated, job_id);
         
          log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Stack Memory Units Allocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
@@ -434,7 +434,10 @@ public:
         
         int size =jobs[job_id].current_heap_element_group+job_size;
         
+        cout << "Allocating Heap" << endl;
         while (jobs[job_id].current_heap_element_group < size) {
+            
+          
             jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_location =  system.MallocFF(jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated, job_id);
             
             log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<jobs[job_id].current_heap_element_group<< " Memory Units Allocated: "<<jobs[job_id].heap[jobs[job_id].current_heap_element_group].heap_memory_units_allocated << endl;
@@ -477,6 +480,10 @@ public:
     pair<int, int> retrieve_heap_element_allocated(const int &job_id, const int &heap_element_id){
               
         return make_pair(jobs[job_id].heap[heap_element_id].allocation, jobs[job_id].heap[heap_element_id].heap_memory_units_allocated);
+    }
+    job_type get_job_type(int job_id){
+        
+        return jobs[job_id].type;
     }
     
     ~PCB(){
