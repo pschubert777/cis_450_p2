@@ -15,7 +15,10 @@
 #include "MAS.h"
 
 
-
+struct heap_elements {
+    int job_id;
+    int element_id;
+};
 
 class PCB{
 private:
@@ -405,7 +408,7 @@ public:
          }
      }
     
-    void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system, const int &current_time_unit ){
+    void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system, vector<heap_elements> & active_heap_jobs ,const int &current_time_unit ){
           // ***NEED TO FINISH try catch block if no memory***
        
         try {
@@ -431,6 +434,12 @@ public:
                        
                        i++;
                    }
+                   for (int j = jobs[job_id].current_heap_element_group; j <size ; j++) {
+                          heap_elements x;
+                          x.job_id = job_id;
+                          x.element_id= j;
+                          active_heap_jobs.push_back(x);
+                      }
                        jobs[job_id].current_heap_element_group = i;
         } catch (invalid_argument & message) {
             
@@ -452,7 +461,7 @@ public:
         
     }
     
-    void allocate_new_job(const int& job_id, MemoryAllocationSystem &system, const int &current_time_unit){
+    void allocate_new_job(const int& job_id, MemoryAllocationSystem &system,vector<int> &active_jobs, vector<heap_elements> & active_heap_jobs, const int &current_time_unit){
         try {
             
       
@@ -500,15 +509,29 @@ public:
             
             i++;
         }
+            // add to active jobs list
+            active_jobs.push_back(job_id);
+            // add active heap elements
+            for (int j = jobs[job_id].current_heap_element_group; j <size ; j++) {
+                heap_elements x;
+                x.job_id = job_id;
+                x.element_id= j;
+                active_heap_jobs.push_back(x);
+            }
+            
             jobs[job_id].current_heap_element_group = i;
+            
+            
       } catch (invalid_argument & message) {
                 
           // deallocate (unit of work concept), then throw again to main
           if (jobs[job_id].stack_location != -1) {
               system.freeFF(jobs[job_id].stack_location, jobs[job_id].stack_memory_units_allocated);
+               log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Stack Memory Units Deallocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
           }
           if (jobs[job_id].code_location != -1) {
               system.freeFF(jobs[job_id].code_location, jobs[job_id].code_memory_units_allocated);
+               log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Code Memory Units Deallocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
           }
           
           int job_group_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
@@ -517,6 +540,7 @@ public:
           for (int i =jobs[job_id].current_heap_element_group; i < size; i++) {
               if (jobs[job_id].heap[i].heap_location != -1) {
                   system.freeFF(jobs[job_id].heap[i].heap_location, jobs[job_id].heap[i].heap_memory_units_allocated);
+                  log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Deallocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
               }
           }
           
@@ -529,13 +553,20 @@ public:
     void deallocate_heap(const int& job_id,const int &heap_element_id, MemoryAllocationSystem &system, const int &current_time_unit){
         
         system.freeFF(jobs[job_id].heap[heap_element_id].heap_location, jobs[job_id].heap[heap_element_id].heap_memory_units_allocated);
+        log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<heap_element_id<< " Memory Units Deallocated: "<<jobs[job_id].heap[heap_element_id].heap_memory_units_allocated << endl;
         
         
     }
     void deallocate_job(const int& job_id,  MemoryAllocationSystem &system, const int &current_time_unit){
         
+        
         system.freeFF(jobs[job_id].stack_location, jobs[job_id].stack_memory_units_allocated);
+        
+         log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Stack Memory Units Deallocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
+        
          system.freeFF(jobs[job_id].code_location, jobs[job_id].code_memory_units_allocated);
+        
+         log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Code Memory Units Deallocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
         
     }
     bool check_heap_deallocation(const int &job_id, const int&heap_element_id, const int& current_time){

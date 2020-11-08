@@ -13,7 +13,7 @@
 
 vector<double> request_job_distribtution() {
 	vector<double> job_distro;
-	double small = 0, medium = 0, large = 0, sum = 0;
+    double small = 0, medium = 0, large = 0;
 	bool valid_input = false;
 	while (!valid_input) {
 		cout << "Please enter the job distribution for the simulation (small, medium, large)." << endl;
@@ -112,13 +112,13 @@ int request_memory_units_available() {
 
 
 bool request_lost_objects() {
-	bool is_lost_objects;
+	bool is_lost_objects = false;
 	string user_input;
 
 	cout << "Would you like to simulate lost objects in this simulation? Enter yes or no" << endl;
 	cin >> user_input;
 
-	while (user_input != "yes" || user_input != "no") {
+	while (user_input != "yes" && user_input != "no") {
 		cout << "ERROR. Please enter yes or no if you would like to simulate lost objects or not." << endl;
 		cin >> user_input;
 	}
@@ -142,7 +142,7 @@ string request_algorithm() {
 	cout << "Please enter the algorithm you would like to use for this simulation. Either firstfit, nextfit, bestfit, or worstfit" << endl;
 	cin >> algo;
 
-	while (algo != "firstfit" || algo != "nextfit" || algo != "bestfit" || algo != "worstfit") {
+	while (algo != "firstfit" && algo != "nextfit" && algo != "bestfit" && algo != "worstfit") {
 		cout << "ERROR. Please enter the name of one of the algorithms for this simulation. Either firstfit, nextfit, bestfit, or worstfit" << endl;
 		cin >> algo;
 	}
@@ -152,10 +152,6 @@ string request_algorithm() {
 // sort here by arrival time
 
 
-struct heap_elements {
-	int job_id;
-	int element_id;
-};
 
 int main() {
 	// main variables
@@ -166,7 +162,7 @@ int main() {
 	vector<heap_elements>active_heap_elements;
 	// variables to hold method vals
 	vector<double>distribution; // small == index 0, medium == index 1, large == index 2
-	int distribution = 0, duration = 0, memory_unit_size = 0, num_memory_units = 0;
+	int duration = 0, memory_unit_size = 0, num_memory_units = 0;
 	bool is_lost_objects;
 	string algorithm_to_run;
 	// variables for files
@@ -215,13 +211,13 @@ int main() {
 		try {
 			// allocate new jobs
 			for (int i = 0; i < active_jobs.size(); i++) {
-				myPCB.allocate_and_return_heap_elements(active_jobs[i], myMAS, time_counter);
+				myPCB.allocate_and_return_heap_elements(active_jobs[i], myMAS, active_heap_elements, time_counter);
 			}
 
 			// 
 			for (int j = 0; j < queue.size(); j++) {
 				if (queue[j].job_arrival_time == time_counter) {
-					myPCB.allocate_new_job(queue[j].job_id, myMAS, time_counter);
+					myPCB.allocate_new_job(queue[j].job_id, myMAS,active_jobs, active_heap_elements, time_counter);
 				}
 				else if (queue[j].job_arrival_time > time_counter) {
 					break;

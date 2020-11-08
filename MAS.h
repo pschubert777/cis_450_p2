@@ -107,17 +107,17 @@ public:
         memory_data_structure.resize(num_memory_units, -1);
         
         //set the initial free areas of memory
-        if (memory_allocation_algorithm_type=="firstFit") {
+        if (memory_allocation_algorithm_type=="firstfit") {
             //first fit memory algorithm
             first_fit_memory_locations.insert(make_pair(0, num_memory_units));
         }
-        else if (memory_allocation_algorithm_type=="nextFit"){
+        else if (memory_allocation_algorithm_type=="nextfit"){
             //next fit memory algorithm
             
             next_fit_memory_locations.insert(make_pair(0, num_memory_units));
             next_fit_current_index = next_fit_memory_locations.begin();
         }
-        else if(memory_allocation_algorithm_type=="bestFit"){
+        else if(memory_allocation_algorithm_type=="bestfit"){
             //best fit memory algorithm
             best_fit_memory_locations.insert(make_pair(0,num_memory_units ));
         }
@@ -138,15 +138,15 @@ public:
     }
     int MallocFF(const int &num_memory_units, const int &job_id){
         
-        if (memory_allocation_algorithm_type=="firstFit") {
+        if (memory_allocation_algorithm_type=="firstfit") {
             //first fit memory algorithm
             return firstFit(num_memory_units, job_id);
         }
-        else if (memory_allocation_algorithm_type=="nextFit"){
+        else if (memory_allocation_algorithm_type=="nextfit"){
             //next fit memory algorithm
             return nextFit(num_memory_units, job_id);
         }
-        else if(memory_allocation_algorithm_type=="bestFit"){
+        else if(memory_allocation_algorithm_type=="bestfit"){
             //best fit memory algorithm
             return bestFit(num_memory_units, job_id);
         }
@@ -395,7 +395,7 @@ public:
     
     void deallocate_firstFit_nextFit(const int& starting_location, const int & num_memory_units){
         pair<int, int>new_deallocated_free_space;
-        if (memory_allocation_algorithm_type=="firstFit") {
+        if (memory_allocation_algorithm_type=="firstfit") {
             new_deallocated_free_space = make_pair(starting_location, num_memory_units);
             first_fit_memory_locations.insert(new_deallocated_free_space);
             map<int,int>::iterator inserted_element = first_fit_memory_locations.find(starting_location);
@@ -491,7 +491,7 @@ public:
     void deallocate_bestFit_worstFit(const int& starting_location, const int & num_memory_units){
         
        pair<int, int>new_deallocated_free_space;
-       if (memory_allocation_algorithm_type=="bestFit") {
+       if (memory_allocation_algorithm_type=="bestfit") {
            new_deallocated_free_space = make_pair(starting_location, num_memory_units);
            best_fit_memory_locations.insert(new_deallocated_free_space);
           map<int,int>::iterator inserted_element = best_fit_memory_locations.find(starting_location);
@@ -586,7 +586,7 @@ public:
         }
         
         
-        if (memory_allocation_algorithm_type =="firstFit" ||memory_allocation_algorithm_type=="nextFit" ) {
+        if (memory_allocation_algorithm_type =="firstfit" ||memory_allocation_algorithm_type=="nextfit" ) {
             deallocate_firstFit_nextFit(starting_location, num_memory_units);
         }
  
