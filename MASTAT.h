@@ -20,7 +20,6 @@ struct heap_elements {
 	int heap_element_id;
 };
 
-#define PCB pcb_stat;
 
 class MASTAT {
 private:
@@ -56,27 +55,31 @@ public:
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
 	int memory_allocated(PCB &pcb, vector<int> &active_jobs, vector<heap_elements> &heap_elements) {
-		int sum_memory;
+		int allocated_memory = 0;
 
 		for (int i = 0; i < active_jobs.size(); i++) {
-			sum_memory+= 
+			allocated_memory += pcb.retrieve_allocated_memory(active_jobs[i], heap_elements[i].heap_element_id);
 		}
 
-
-
-		return;
+		return allocated_memory;
 	}
 
 	// Description: method to get the current memory in use
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
-	int memory_in_user(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements) {
+	int memory_in_use(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, const int &total_sim_memory) {
+		int allocated_memory = 0;
+		int used_memory = 0;
+
+		for (int i = 0; i < active_jobs.size(); i++) {
+			allocated_memory += pcb.retrieve_allocated_memory(active_jobs[i], heap_elements[i].heap_element_id);
+		}
+
+		used_memory = allocated_memory / total_sim_memory;
 
 
-
-
-		return;
+		return used_memory;
 	}
 
 	// Description: 
@@ -84,8 +87,13 @@ public:
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
 	int required_memory(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements) {
+		int required_memory = 0;
 
+		for (int i = 0; i < active_jobs.size(); i++) {
+			required_memory += pcb.retrieve_required_memory(active_jobs[i], heap_elements[i].heap_element_id);
+		}
 
+		return required_memory;
 
 	}
 
@@ -93,11 +101,18 @@ public:
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
-	void percent_internal_fragmentaion(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements) {
+	int percent_internal_fragmentaion(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, const int &total_sim_memory) {
+		int allocated_memory = 0, req_memory = 0, memory_use = 0;
+		int internal_fragmentation = 0;
 
+		allocated_memory = memory_allocated(pcb, active_jobs, heap_elements);
+		memory_use = memory_in_use(pcb, active_jobs, heap_elements, total_sim_memory);
+		req_memory = required_memory(pcb, active_jobs, heap_elements);
 
+		internal_fragmentation = memory_use - req_memory;
+		internal_fragmentation = internal_fragmentation / allocated_memory;
 
-
+		return internal_fragmentation;
 	}
 
 
@@ -105,11 +120,16 @@ public:
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
-	int amount_memory_free(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, MemoryAllocationSystem &mas) {
+	int amount_memory_free(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, MemoryAllocationSystem &mas, const int &total_sim_memory) {
+		int free_memory = 0, allocated = 0;
+
+		allocated = memory_allocated(pcb, active_jobs, heap_elements);
+		free_memory = total_sim_memory - allocated;
+
+		
 
 
-
-
+		return free_memory;
 	}
 
 	// Description: 
@@ -117,10 +137,13 @@ public:
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
 	int external_fragmentation(MemoryAllocationSystem &mas) {
+		int ext_frag = 0;
 
-
-
-
+		// what method/ variable in MAS is this "number of free areas"
+		
+		
+		
+		return ext_frag;
 	}
 
 
