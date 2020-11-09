@@ -16,10 +16,12 @@
 #include <iostream>
 #include <utility>
 #include <iterator>
+#include <queue>
 #include <map>
 
 using namespace std;
 enum job_type {small =0, medium =1, large = 2};
+
 
 struct free_memory_details{
     int size;
@@ -29,7 +31,13 @@ struct job{
     int job_id;
     int job_arrival_time;
 };
-
+class comparator{
+public:
+    bool operator()(const job & job1, const job &job2) const{
+        return job1.job_arrival_time > job2.job_arrival_time;
+    }
+    
+};
 struct heap_info {
     int allocation; // the amount of memory this element takes up
     int heap_location; // location where the heap is allocated
@@ -253,8 +261,12 @@ public:
               }
          else if(location != -1&& memory_remaining ==0){
              
-             if (next_fit_current_index == free_memory_to_erase) { next_fit_current_index++;}
-             next_fit_memory_locations.erase(free_memory_to_erase);
+             if (next_fit_current_index == free_memory_to_erase) {
+                 next_fit_current_index =  next_fit_memory_locations.erase(free_memory_to_erase);}
+             else{
+                  next_fit_memory_locations.erase(free_memory_to_erase);
+             }
+            
                 
              if (!next_fit_memory_locations.empty() ) {
                 
@@ -265,14 +277,12 @@ public:
                  else{
                       map<int, int>:: iterator tmp(next_fit_current_index);
                  
-                     cout<< "First: "<< tmp->first << " Second:"<< tmp->second << endl;
                      tmp++;
                         if (tmp == next_fit_memory_locations.end()) {
                            
                            next_fit_current_index = next_fit_memory_locations.begin();
                                         }
                         else{
-                            cout << "Allocating7"<< endl;
                             next_fit_current_index++;
                     }
                  }
