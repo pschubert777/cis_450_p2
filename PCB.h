@@ -475,9 +475,10 @@ public:
         }
         else{
             jobs[job_id].stack_location = stack_location;
+              log<< "Time unit: "<< current_time_unit << " Location: " << jobs[job_id].stack_location <<" Job ID: "<< job_id<< " Stack Memory Units Allocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
         }
         
-        log<< "Time unit: "<< current_time_unit<< " Location: " << jobs[job_id].code_location <<" Job ID: "<< job_id<< " Code Memory Units Allocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
+      
        
         code_location =  system.MallocFF(jobs[job_id].code_memory_units_allocated, job_id);
         
@@ -486,9 +487,10 @@ public:
         }
         else{
             jobs[job_id].code_location = code_location;
+              log<< "Time unit: "<< current_time_unit<< " Location: " << jobs[job_id].code_location <<" Job ID: "<< job_id<< " Code Memory Units Allocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
         }
         
-         log<< "Time unit: "<< current_time_unit << " Location: " << jobs[job_id].stack_location <<" Job ID: "<< job_id<< " Stack Memory Units Allocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
+       
         
         int job_group_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
         
@@ -505,9 +507,10 @@ public:
             }
             else{
                 jobs[job_id].heap[i].heap_location = heap_location;
+                log<< "Time unit: "<< current_time_unit << " Location: " << jobs[job_id].heap[i].heap_location <<" Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Allocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
             }
             
-            log<< "Time unit: "<< current_time_unit << " Location: " << jobs[job_id].heap[i].heap_location <<" Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Allocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
+            
             
             i++;
         }

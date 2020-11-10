@@ -654,16 +654,16 @@ public:
 
 
 		if (algorithm_type == "firstfit") {
-			num_external_fragmentation = first_fit_memory_locations.size();
+			num_external_fragmentation = int(first_fit_memory_locations.size()); 
 		}
 		else if (algorithm_type == "nextfit") {
-			num_external_fragmentation = next_fit_memory_locations.size();
+			num_external_fragmentation = int(next_fit_memory_locations.size());
 		}
 		else if (algorithm_type == "bestfit") {
-			num_external_fragmentation = best_fit_memory_locations.size();
+			num_external_fragmentation = int(best_fit_memory_locations.size());
 		}
 		else { // worstfit
-			num_external_fragmentation = worst_fit_memory_locations.size();
+			num_external_fragmentation =int( worst_fit_memory_locations.size());
 		}
 
 		return num_external_fragmentation;

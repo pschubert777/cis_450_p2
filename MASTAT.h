@@ -3,7 +3,7 @@
 //  cis_450_p2
 //
 //  Created by Nathan Carey on 11/07/20.
-//  Copyright © 2020 Nathan Carey. All rights reserved.
+//  Copyright ï¿½ 2020 Nathan Carey. All rights reserved.
 //
 
 #ifndef MSTAT_h
@@ -111,7 +111,7 @@ public:
 	// Post-condition: percentage of internal fragmentation
 	// Author: Nathan Carey
 	double percent_internal_fragmentaion(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements) {
-		double allocated_memory = 0, req_memory = 0, memory_use = 0;
+		double allocated_memory = 0, req_memory = 0;
 		double internal_fragmentation = 0;
 
 		allocated_memory = memory_allocated(pcb, active_jobs, heap_elements);
@@ -205,7 +205,7 @@ public:
 	int retrieve_number_size_lost_objects(vector<heap_elements> &heap_elements, PCB &pcb, int current_time) {
 
 
-
+        return 0;
 	}
 
 	// Description: 
@@ -215,7 +215,7 @@ public:
 	int percent_memory_lost_objects(int total_memory_lost, int memory_defined) {
 
 
-
+        return 0;
 	}
 
 	// Description: 
@@ -225,7 +225,7 @@ public:
 	int number_allocations(MemoryAllocationSystem &mas) {
 
 
-
+        return 0;
 	}
 
 
@@ -236,7 +236,7 @@ public:
 	int number_allocation_operations(MemoryAllocationSystem &mas) {
 
 
-
+        return 0;
 
 	}
 
@@ -250,7 +250,7 @@ public:
 
 
 
-
+        return 0;
 	}
 
 	// Description: 
@@ -260,7 +260,7 @@ public:
 	int number_free_requests(MemoryAllocationSystem &mas) {
 
 
-
+        return 0;
 	}
 
 	// Description: 
@@ -270,7 +270,7 @@ public:
 	int number_free_operations(MemoryAllocationSystem &mas) {
 
 
-
+        return 0;
 	}
 
 	// Description: 
@@ -281,7 +281,7 @@ public:
 
 
 
-
+        return 0;
 	}
 
 
@@ -292,7 +292,7 @@ public:
 	int average_free_space(MemoryAllocationSystem &mas) {
 
 
-
+        return 0;
 	}
 
 
@@ -300,25 +300,27 @@ public:
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
+    /*
 	vector<int> simulation_internal_fragmentation(PCB &pcb, vector<int> active_jobs, vector<heap_elements> heap_elements) {
 
 
-
+        return 0;
 	}
 
-
+*/
 	// Description: 
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
 	int allocation_threshold(PCB &pcb, vector<int> active_jobs) {
 
-
+        return 0; 
 	}
 
 
 	void print_statistics(const int &time, PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, MemoryAllocationSystem &mas, string algorithm, const int &heap_allocations, const int &current_time) {
-		int mem_allocated = 0, req_mem = 0, external_frag = 0, largest_free = 0, smallest_free = 0, num_heap_alloc = 0;
+        
+		int mem_allocated = 0, req_mem = 0, external_frag = 0, largest_free = 0, smallest_free = 0;
 		double mem_use = 0, internal_frag = 0, free_mem = 0;
 
 		mem_allocated = memory_allocated(pcb, active_jobs, heap_elements);
