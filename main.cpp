@@ -162,7 +162,7 @@ int main() {
 	// main variables
 	double small = 0, medium = 0, large = 0, run_time;
 	priority_queue<job, vector<job>, comparator>queue; 
-	int time_counter;
+	int time_counter, total_memory_available = 0;
 	vector<int>active_jobs;
 	vector<heap_elements>active_heap_elements;
 	// variables to hold method vals
@@ -197,6 +197,9 @@ int main() {
 	is_lost_objects = request_lost_objects();
 	algorithm_to_run = request_algorithm();
 	
+
+	// total memory used for stats class
+	total_memory_available = memory_unit_size * num_memory_units;
 
 	small = distribution[0];
 	medium = distribution[1];
