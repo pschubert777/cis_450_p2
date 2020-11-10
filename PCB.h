@@ -595,8 +595,8 @@ public:
         return jobs[job_id].type;
     }
     
-	void close_log() {
-		log.close();
+	void close_log(){
+		 log.close();
 	}
 };
 
