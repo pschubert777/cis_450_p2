@@ -11,15 +11,16 @@
 
 #include <string>
 #include "PCB.h"
-#include "MAS.h"
+//#include "MAS.h"
 
 using namespace std;
 
-struct heap_elements {
+/*
+struct stats_heap_elements {
 	int job_id;
 	int heap_element_id;
 };
-
+*/
 
 class MASTAT {
 private:
@@ -27,10 +28,12 @@ private:
 	int total_memory_lost;
 	bool lost_object_sim;
 	string test_name, algorithm;
-	int memory_defined, number_memory_units, num_small_jobs, num_medium_jobs, num_large_jobs;
+	int memory_defined, number_memory_units, num_small_jobs, num_medium_jobs, num_large_jobs, mem_unit_size;
+
+	ofstream output;
 
 public:
-	MASTAT(bool lost_object, string sim_name, string algorithm_type, int total_memory_defined, int total_number_memory_units, int small_jobs, int medium_jobs, int large_jobs) {
+	MASTAT(bool lost_object, string sim_name, string algorithm_type, int total_memory_defined, int total_number_memory_units, int small_jobs, int medium_jobs, int large_jobs, const string &output_file, const int &memory_unit_size) {
 		// are we simulating lost objects
 		lost_object_sim = lost_object;
 		// the name of the simulation
@@ -47,6 +50,10 @@ public:
 		num_medium_jobs = medium_jobs;
 		// number of large jobs
 		num_large_jobs = large_jobs;
+		//
+		mem_unit_size = memory_unit_size;
+
+		output.open(output_file);
 	}
 
 	
@@ -58,7 +65,10 @@ public:
 		int allocated_memory = 0;
 
 		for (int i = 0; i < active_jobs.size(); i++) {
-			allocated_memory += pcb.retrieve_allocated_memory(active_jobs[i], heap_elements[i].heap_element_id);
+			allocated_memory += pcb.retrieve_allocated_memory(active_jobs[i], mem_unit_size);
+		}
+		for (int j = 0; j < heap_elements.size(); j++) {
+			allocated_memory += pcb.retrieve_allocated_heap_memory(heap_elements[j].job_id, heap_elements[j].element_id, mem_unit_size);
 		}
 
 		return allocated_memory;
@@ -68,18 +78,14 @@ public:
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements, total simulation memory
 	// Post-condition: sum of the amount of all memory currently in use
 	// Author: Nathan Carey
-	int memory_in_use(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, const int &total_sim_memory) {
-		int allocated_memory = 0;
-		int used_memory = 0;
+	double memory_in_use(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements) {
+		double used_memory = 0;
+		double allocated_memory = 0;
 
-		for (int i = 0; i < active_jobs.size(); i++) {
-			allocated_memory += pcb.retrieve_allocated_memory(active_jobs[i], heap_elements[i].heap_element_id);
-		}
+		allocated_memory = memory_allocated(pcb, active_jobs, heap_elements);
+		used_memory = allocated_memory / memory_defined;
 
-		used_memory = allocated_memory / total_sim_memory;
-
-
-		return used_memory;
+		return used_memory * 100;
 	}
 
 	// Description: method to get the amount of required memory based on the list of active jobs and active heap elements
@@ -90,7 +96,10 @@ public:
 		int required_memory = 0;
 
 		for (int i = 0; i < active_jobs.size(); i++) {
-			required_memory += pcb.retrieve_required_memory(active_jobs[i], heap_elements[i].heap_element_id);
+			required_memory += pcb.retrieve_required_memory(active_jobs[i], heap_elements[i].element_id);
+		}
+		for (int j = 0; j < heap_elements.size(); j++) {
+			required_memory += pcb.retrieve_allocated_heap_memory(heap_elements[j].job_id, heap_elements[j].element_id, mem_unit_size);
 		}
 
 		return required_memory;
@@ -101,18 +110,24 @@ public:
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements, total simulation memory
 	// Post-condition: percentage of internal fragmentation
 	// Author: Nathan Carey
-	int percent_internal_fragmentaion(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, const int &total_sim_memory) {
-		int allocated_memory = 0, req_memory = 0, memory_use = 0;
-		int internal_fragmentation = 0;
+	double percent_internal_fragmentaion(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements) {
+		double allocated_memory = 0, req_memory = 0, memory_use = 0;
+		double internal_fragmentation = 0;
 
 		allocated_memory = memory_allocated(pcb, active_jobs, heap_elements);
-		memory_use = memory_in_use(pcb, active_jobs, heap_elements, total_sim_memory);
-		req_memory = required_memory(pcb, active_jobs, heap_elements);
+		if (allocated_memory > 0) {
+			//memory_use = memory_in_use(pcb, active_jobs, heap_elements);
+			req_memory = required_memory(pcb, active_jobs, heap_elements);
 
-		internal_fragmentation = memory_use - req_memory;
-		internal_fragmentation = internal_fragmentation / allocated_memory;
+			internal_fragmentation = allocated_memory - req_memory;
+			internal_fragmentation = internal_fragmentation / allocated_memory;
+		}
+		else {
+			internal_fragmentation = 0;
+		}
 
-		return internal_fragmentation;
+		// return as percentage
+		return internal_fragmentation * 100;
 	}
 
 
@@ -120,14 +135,20 @@ public:
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements, total amount of simulation memory
 	// Post-condition: the amount of free memory in the simulation
 	// Author: Nathan Carey
-	int amount_memory_free(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, MemoryAllocationSystem &mas, const int &total_sim_memory) {
-		int free_memory = 0, allocated = 0;
+	double amount_memory_free(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, MemoryAllocationSystem &mas) {
+		double free_memory = 0, allocated = 0;
 
 		allocated = memory_allocated(pcb, active_jobs, heap_elements);
-		free_memory = total_sim_memory - allocated;
-		free_memory = free_memory / allocated;
+		if (allocated > 0) {
+			free_memory = memory_defined - allocated;
+			free_memory = free_memory / memory_defined;
+		}
+		else {
+			free_memory = 0;
+		}
 	
-		return free_memory;
+		// return as percentage
+		return free_memory * 100;
 	}
 
 	// Description: use MAS method to get size of memory locations depending on algorithm type
@@ -173,9 +194,8 @@ public:
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
 	int retrieve_heap_allocations(int number_succesful_heap_allocations) {
-
-
-
+		succesful_heap_allocations += number_succesful_heap_allocations;
+		return number_succesful_heap_allocations;
 	}
 
 	// Description: 
@@ -296,6 +316,39 @@ public:
 
 	}
 
+
+	void print_statistics(const int &time, PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, MemoryAllocationSystem &mas, string algorithm, const int &heap_allocations, const int &current_time) {
+		int mem_allocated = 0, req_mem = 0, external_frag = 0, largest_free = 0, smallest_free = 0, num_heap_alloc = 0;
+		double mem_use = 0, internal_frag = 0, free_mem = 0;
+
+		mem_allocated = memory_allocated(pcb, active_jobs, heap_elements);
+		mem_use = memory_in_use(pcb, active_jobs, heap_elements);
+		req_mem = required_memory(pcb, active_jobs, heap_elements);
+		internal_frag = percent_internal_fragmentaion(pcb, active_jobs, heap_elements);
+		free_mem = amount_memory_free(pcb, active_jobs, heap_elements, mas);
+		external_frag = external_fragmentation(mas, algorithm);
+		largest_free = largest_free_space(mas, algorithm);
+		smallest_free = smallest_free_space(mas, algorithm);
+		retrieve_heap_allocations(heap_allocations);
+		// use successful_heap_allocations to print this
+
+		output << "Time Unit: " << current_time << " | Interum Statistics During Simulation ----------------------------" << endl;
+		output << "Total amount of memory defined: " << memory_defined << endl;
+		output << "amount of memory allocated: " << mem_allocated << endl;
+		output << "% memory in use: " << mem_use << endl;
+		output << "required amount of memory: " << req_mem << endl;
+		output << "% internal fragmentation: " << internal_frag << endl;
+		output << "% memory free: " << free_mem << endl;
+		output << "external fragmentation: " << external_frag << endl;
+		output << "largest free space: " << largest_free << endl;
+		output << "smallest free space: " << smallest_free << endl;
+		output << "number of heap allocation: " << heap_allocations << endl << endl;
+	}
+
+
+	void close_output() {
+		output.close();
+	}
 
 };
 

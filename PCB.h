@@ -408,7 +408,7 @@ public:
          }
      }
     
-    void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system, vector<heap_elements> & active_heap_jobs ,const int &current_time_unit ){
+    void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system, vector<heap_elements> & active_heap_jobs ,const int &current_time_unit, int &count_heap_allocations){
           // ***NEED TO FINISH try catch block if no memory***
        
         try {
@@ -439,6 +439,7 @@ public:
                           x.job_id = job_id;
                           x.element_id= j;
                           active_heap_jobs.push_back(x);
+						  count_heap_allocations++;
                       }
                        jobs[job_id].current_heap_element_group = i;
         } catch (invalid_argument & message) {
@@ -596,15 +597,20 @@ public:
     }
 
 	// Statistics helper methods
-	int retrieve_allocated_memory(const int &job_id, const int &heap_element_id) {
+	int retrieve_allocated_memory(const int &job_id, const int &mem_unit_size) {
 
 		int total_memory = 0;
 
 		total_memory += jobs[job_id].code_memory_units_allocated;
 		total_memory += jobs[job_id].stack_memory_units_allocated;
-		total_memory += jobs[job_id].heap[heap_element_id].allocation;
+
+		total_memory = total_memory * mem_unit_size;
 
 		return total_memory;
+	}
+
+	int retrieve_allocated_heap_memory(const int &job_id, const int &heap_element_id, const int &mem_unit_size) {
+		return jobs[job_id].heap[heap_element_id].heap_memory_units_allocated * mem_unit_size;
 	}
 
 	int retrieve_required_memory(const int &job_id, const int &heap_element_id) {
@@ -613,7 +619,6 @@ public:
 
 		total_memory += jobs[job_id].code_size;
 		total_memory += jobs[job_id].stack_size;
-		total_memory += jobs[job_id].heap[heap_element_id].allocation;
 
 		return total_memory;
 	}

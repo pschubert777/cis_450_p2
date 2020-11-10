@@ -712,7 +712,7 @@ public:
 	}
 
 	int find_smallest_free_space(string &algorithm_type) {
-		int current_smallest_space = 0;
+		int current_smallest_space = INT_MAX;
 
 
 		if (algorithm_type == "firstfit") {

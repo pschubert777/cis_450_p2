@@ -9,6 +9,7 @@
 // testing that this worked
 
 #include "PCB.h"
+#include "MASTAT.h"
 #include <algorithm>
 
 
@@ -162,7 +163,7 @@ int main() {
 	// main variables
 	double small = 0, medium = 0, large = 0, run_time;
 	priority_queue<job, vector<job>, comparator>queue; 
-	int time_counter, total_memory_available = 0;
+	int time_counter, total_memory_available = 0, count_heap_allocations = 0;
 	vector<int>active_jobs;
 	vector<heap_elements>active_heap_elements;
 	// variables to hold method vals
@@ -182,12 +183,10 @@ int main() {
 	cout << "Please enter the name of the log file for the simulation: ";
 	cin >> log_file_name;
 
-	log_file.open(log_file_name);
 
 	cout << "Please enter the name of the output file for the simulation: ";
 	cin >> output_file_name;
 
-	output_file.open(output_file_name);
 
 
 	distribution = request_job_distribtution();
@@ -217,11 +216,15 @@ int main() {
 
 	MemoryAllocationSystem myMAS(num_memory_units, memory_unit_size, algorithm_to_run);
 	time_counter = 0;
+
+	MASTAT myStats(is_lost_objects, test_name, algorithm_to_run, total_memory_available, num_memory_units, small, medium, large, output_file_name, memory_unit_size);
+
 	while (time_counter < duration) {
+		count_heap_allocations = 0;
 		try {
 			// allocate new jobs
 			for (int i = 0; i < active_jobs.size(); i++) {
-				myPCB.allocate_and_return_heap_elements(active_jobs[i], myMAS, active_heap_elements, time_counter);
+				myPCB.allocate_and_return_heap_elements(active_jobs[i], myMAS, active_heap_elements, time_counter, count_heap_allocations);
 			}
 
 			//
@@ -241,8 +244,11 @@ int main() {
 		
 
 		// !!
-		// if running for 2000 time units print stats
+		// if running for 2000 time units print stats and every 20 after
 		// !!
+		if (time_counter % 20 == 0 && time_counter >= 2000) {
+			myStats.print_statistics(time_counter, myPCB, active_jobs, active_heap_elements, myMAS, algorithm_to_run, count_heap_allocations, time_counter);
+		}
       
        
        vector<heap_elements>:: iterator i = active_heap_elements.begin();
@@ -276,7 +282,9 @@ int main() {
 	}
 
 	// print final statistics!!
+	myStats.print_statistics(time_counter, myPCB, active_jobs, active_heap_elements, myMAS, algorithm_to_run, count_heap_allocations, time_counter);
 
+	myStats.close_output();
     myPCB.close_log();
 	return 0;
 }
