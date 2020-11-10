@@ -555,7 +555,7 @@ public:
     void deallocate_heap(const int& job_id,const int &heap_element_id, MemoryAllocationSystem &system, const int &current_time_unit){
         
         system.freeFF(jobs[job_id].heap[heap_element_id].heap_location, jobs[job_id].heap[heap_element_id].heap_memory_units_allocated);
-        log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<heap_element_id<< " Memory Units Deallocated: "<<jobs[job_id].heap[heap_element_id].heap_memory_units_allocated << endl;
+        log<< "Time unit: "<< current_time_unit<<" Location: " << jobs[job_id].heap[heap_element_id].heap_location <<" Job ID: "<< job_id<< " Heap Element ID: "<<heap_element_id<< " Memory Units Deallocated: "<<jobs[job_id].heap[heap_element_id].heap_memory_units_allocated << endl;
         
         
     }
@@ -564,11 +564,11 @@ public:
         
         system.freeFF(jobs[job_id].stack_location, jobs[job_id].stack_memory_units_allocated);
         
-         log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Stack Memory Units Deallocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
+        log<< "Time unit: "<< current_time_unit << " Location: " << jobs[job_id].stack_location <<" Job ID: "<< job_id<< " Stack Memory Units Deallocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
         
          system.freeFF(jobs[job_id].code_location, jobs[job_id].code_memory_units_allocated);
         
-         log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Code Memory Units Deallocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
+         log<< "Time unit: "<< current_time_unit << " Location: " << jobs[job_id].code_location <<" Job ID: "<< job_id<< " Code Memory Units Deallocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
         
     }
     bool check_heap_deallocation(const int &job_id, const int&heap_element_id, const int& current_time){
