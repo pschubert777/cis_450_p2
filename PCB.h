@@ -626,6 +626,13 @@ public:
 
 		return total_memory;
 	}
+
+	vector<int> retrieve_number_of_jobs(vector<int> &job_holder) {
+		job_holder[0] = num_small_jobs;
+		job_holder[1] = num_medium_jobs;
+		job_holder[2] = num_large_jobs;
+		return job_holder;
+	}
     
     void close_log(){
          log.close();

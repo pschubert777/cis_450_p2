@@ -56,6 +56,11 @@ public:
 		output.open(output_file);
 	}
 
+	void num_jobs(PCB &pcb, vector<int> &job_vector) {
+		pcb.get_num_of_each_job(job_vector);
+		
+		return;
+	}
 	
 	// Description: method to get the total amound of memory allocated
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
@@ -322,7 +327,9 @@ public:
         
 		int mem_allocated = 0, req_mem = 0, external_frag = 0, largest_free = 0, smallest_free = 0;
 		double mem_use = 0, internal_frag = 0, free_mem = 0;
+		vector<int> number_jobs;
 
+		num_jobs(pcb, number_jobs);
 		mem_allocated = memory_allocated(pcb, active_jobs, heap_elements);
 		mem_use = memory_in_use(pcb, active_jobs, heap_elements);
 		req_mem = required_memory(pcb, active_jobs, heap_elements);
@@ -335,6 +342,9 @@ public:
 		// use successful_heap_allocations to print this
 
 		output << "Time Unit: " << current_time << " | Interum Statistics During Simulation ----------------------------" << endl;
+		output << "Number Small Jobs: " << number_jobs[0] << endl;
+		output << "Number Medium Jobs: " << number_jobs[1] << endl;
+		output << "Number Large Jobs: " << number_jobs[2] << endl;
 		output << "Total amount of memory defined: " << memory_defined << endl;
 		output << "amount of memory allocated: " << mem_allocated << endl;
 		output << "% memory in use: " << mem_use << endl;
