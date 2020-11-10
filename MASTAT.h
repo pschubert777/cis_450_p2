@@ -23,7 +23,7 @@ struct heap_elements {
 
 class MASTAT {
 private:
-	int number_heap_allocations;
+	int succesful_heap_allocations;
 	int total_memory_lost;
 	bool lost_object_sim;
 	string test_name, algorithm;
@@ -65,8 +65,8 @@ public:
 	}
 
 	// Description: method to get the current memory in use
-	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
-	// Post-condition: sum of the amount of all memory allocated
+	// Pre-condition: PCB parameter, list of active jobs, list of heap elements, total simulation memory
+	// Post-condition: sum of the amount of all memory currently in use
 	// Author: Nathan Carey
 	int memory_in_use(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, const int &total_sim_memory) {
 		int allocated_memory = 0;
@@ -82,9 +82,9 @@ public:
 		return used_memory;
 	}
 
-	// Description: 
+	// Description: method to get the amount of required memory based on the list of active jobs and active heap elements
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
-	// Post-condition: sum of the amount of all memory allocated
+	// Post-condition: sum of the amount of all required memory
 	// Author: Nathan Carey
 	int required_memory(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements) {
 		int required_memory = 0;
@@ -97,9 +97,9 @@ public:
 
 	}
 
-	// Description: 
-	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
-	// Post-condition: sum of the amount of all memory allocated
+	// Description: method to get the percentage of internal fragmentation currently in the simulation
+	// Pre-condition: PCB parameter, list of active jobs, list of heap elements, total simulation memory
+	// Post-condition: percentage of internal fragmentation
 	// Author: Nathan Carey
 	int percent_internal_fragmentaion(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, const int &total_sim_memory) {
 		int allocated_memory = 0, req_memory = 0, memory_use = 0;
@@ -116,32 +116,28 @@ public:
 	}
 
 
-	// Description: 
-	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
-	// Post-condition: sum of the amount of all memory allocated
+	// Description: method to get the amount of memory currently free in the simulation
+	// Pre-condition: PCB parameter, list of active jobs, list of heap elements, total amount of simulation memory
+	// Post-condition: the amount of free memory in the simulation
 	// Author: Nathan Carey
 	int amount_memory_free(PCB &pcb, vector<int> active_jobs, vector<heap_elements> &heap_elements, MemoryAllocationSystem &mas, const int &total_sim_memory) {
 		int free_memory = 0, allocated = 0;
 
 		allocated = memory_allocated(pcb, active_jobs, heap_elements);
 		free_memory = total_sim_memory - allocated;
-
-		
-
-
+		free_memory = free_memory / allocated;
+	
 		return free_memory;
 	}
 
-	// Description: 
+	// Description: use MAS method to get size of memory locations depending on algorithm type
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
-	int external_fragmentation(MemoryAllocationSystem &mas) {
+	int external_fragmentation(MemoryAllocationSystem &mas, string &algorithm_type) {
 		int ext_frag = 0;
 
-		// what method/ variable in MAS is this "number of free areas"
-		
-		
+		ext_frag = mas.calculate_external_fragmentation(algorithm_type);
 		
 		return ext_frag;
 	}
@@ -151,10 +147,12 @@ public:
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
-	int largest_free_space(MemoryAllocationSystem &mas) {
+	int largest_free_space(MemoryAllocationSystem &mas, string &algorithm_type) {
+		int largest_space = 0;
 
+		largest_space = mas.find_largest_free_space(algorithm_type);
 
-
+		return largest_space;
 	}
 
 
@@ -162,10 +160,12 @@ public:
 	// Pre-condition: PCB parameter, list of active jobs, list of heap elements
 	// Post-condition: sum of the amount of all memory allocated
 	// Author: Nathan Carey
-	int smallest_free_space(MemoryAllocationSystem &mas) {
+	int smallest_free_space(MemoryAllocationSystem &mas, string &algorithm_type) {
+		int smallest_space = 0;
 
+		smallest_space = mas.find_smallest_free_space(algorithm_type);
 
-
+		return smallest_space;
 	}
 
 	// Description: 

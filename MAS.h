@@ -595,6 +595,154 @@ public:
         }
         
     }
+
+	int get_number_allocations(const int &time_counter) {
+		return num_allocation_requests[time_counter];
+	}
+
+	int get_number_free_requests(const int &time_counter) {
+		return num_free_requests[time_counter];
+	}
+
+	int get_number_free_operations(const int &time_counter) {
+		return total_num_free_operations[time_counter];
+	}
+
+
+	int get_number_allocation_operations(const int &time_counter) {
+		return total_num_allocation_operations[time_counter];
+	}
+
+	int get_number_avg_allocation_operations(const int &time_counter) {
+		int number_operations = 0, sum_operations = 0;
+
+		number_operations = time_counter + 1;
+
+		for (int i = 0; i < time_counter; i++) {
+			sum_operations += total_num_allocation_operations[i];
+		}
+
+		return (sum_operations / number_operations);
+
+	}
+
+
+	int get_number_avg_free_operations(const int &time_counter) {
+		int number_operations = 0, sum_operations = 0;
+
+		number_operations = time_counter + 1;
+
+		for (int i = 0; i < time_counter; i++) {
+			sum_operations += total_num_free_operations[i];
+		}
+
+		return (sum_operations / number_operations);
+	}
+
+	int calculate_external_fragmentation(string &algorithm_type) {
+		int num_external_fragmentation = 0;
+
+
+		if (algorithm_type == "firstfit") {
+			num_external_fragmentation = first_fit_memory_locations.size();
+		}
+		else if (algorithm_type == "nextfit") {
+			num_external_fragmentation = next_fit_memory_locations.size();
+		}
+		else if (algorithm_type == "bestfit") {
+			num_external_fragmentation = best_fit_memory_locations.size();
+		}
+		else { // worstfit
+			num_external_fragmentation = worst_fit_memory_locations.size();
+		}
+
+		return num_external_fragmentation;
+	}
+
+
+	int find_largest_free_space(string &algorithm_type) {
+		int current_largest_space = 0;
+
+
+		if (algorithm_type == "firstfit") {
+			for (auto i = first_fit_memory_locations.begin(); i != first_fit_memory_locations.end(); i++) {
+
+				if (current_largest_space < i->second) {
+					current_largest_space = i->second;
+				}
+
+			}
+		}
+		else if (algorithm_type == "nextfit") {
+			for (auto i = next_fit_memory_locations.begin(); i != next_fit_memory_locations.end(); i++) {
+
+				if (current_largest_space < i->second) {
+					current_largest_space = i->second;
+				}
+			}
+		}
+		else if (algorithm_type == "bestfit") {
+			for (auto i = best_fit_memory_locations.begin(); i != best_fit_memory_locations.end(); i++) {
+
+				if (current_largest_space < i->second) {
+					current_largest_space = i->second;
+				}
+			}
+		}
+		else { // worstfit
+			for (auto i = worst_fit_memory_locations.begin(); i != worst_fit_memory_locations.end(); i++) {
+
+				if (current_largest_space < i->second) {
+					current_largest_space = i->second;
+				}
+			}
+		}
+
+		return current_largest_space;
+	}
+
+	int find_smallest_free_space(string &algorithm_type) {
+		int current_smallest_space = 0;
+
+
+		if (algorithm_type == "firstfit") {
+			for (auto i = first_fit_memory_locations.begin(); i != first_fit_memory_locations.end(); i++) {
+
+				if (current_smallest_space > i->second) {
+					current_smallest_space = i->second;
+				}
+
+			}
+		}
+		else if (algorithm_type == "nextfit") {
+			for (auto i = next_fit_memory_locations.begin(); i != next_fit_memory_locations.end(); i++) {
+
+				if (current_smallest_space > i->second) {
+					current_smallest_space = i->second;
+				}
+			}
+		}
+		else if (algorithm_type == "bestfit") {
+			for (auto i = best_fit_memory_locations.begin(); i != best_fit_memory_locations.end(); i++) {
+
+				if (current_smallest_space > i->second) {
+					current_smallest_space = i->second;
+				}
+			}
+		}
+		else { // worstfit
+			for (auto i = worst_fit_memory_locations.begin(); i != worst_fit_memory_locations.end(); i++) {
+
+				if (current_smallest_space > i->second) {
+					current_smallest_space = i->second;
+				}
+			}
+		}
+
+		return current_smallest_space;
+	}
+
+
 };
 
 #endif /* MAC_h */
