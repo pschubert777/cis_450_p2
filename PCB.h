@@ -595,30 +595,6 @@ public:
         return jobs[job_id].type;
     }
     
-	// Statistics helper methods
-	int retrieve_allocated_memory(const int &job_id, const int &heap_element_id) {
-
-		int total_memory = 0;
-
-		total_memory += jobs[job_id].code_memory_units_allocated;
-		total_memory += jobs[job_id].stack_memory_units_allocated;
-		total_memory += jobs[job_id].heap[heap_element_id].allocation;
-		
-		return total_memory;
-	}
-
-	int retrieve_required_memory(const int &job_id, const int &heap_element_id) {
-
-		int total_memory = 0;
-
-		total_memory += jobs[job_id].code_size;
-		total_memory += jobs[job_id].stack_size;
-		total_memory += jobs[job_id].heap[heap_element_id].allocation;
-
-		return total_memory;
-	}
-
-
 
     ~PCB(){
         log.close();
