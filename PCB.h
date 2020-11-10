@@ -430,7 +430,7 @@ public:
                            jobs[job_id].heap[i].heap_location = heap_location;
                        }
                        
-                       log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Allocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
+                       log<< "Time unit: "<< current_time_unit<< " Location: " << jobs[job_id].heap[i].heap_location<<" Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Allocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
                        
                        i++;
                    }
@@ -450,6 +450,7 @@ public:
             for (int i =jobs[job_id].current_heap_element_group; i < size; i++) {
                 if (jobs[job_id].heap[i].heap_location != -1) {
                     system.freeFF(jobs[job_id].heap[i].heap_location, jobs[job_id].heap[i].heap_memory_units_allocated);
+                    log<< "Time unit: "<< current_time_unit<<" Location: " << jobs[job_id].heap[i].heap_location << " Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Deallocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
                 }
             }
             
@@ -476,7 +477,7 @@ public:
             jobs[job_id].stack_location = stack_location;
         }
         
-        log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Code Memory Units Allocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
+        log<< "Time unit: "<< current_time_unit<< " Location: " << jobs[job_id].code_location <<" Job ID: "<< job_id<< " Code Memory Units Allocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
        
         code_location =  system.MallocFF(jobs[job_id].code_memory_units_allocated, job_id);
         
@@ -487,7 +488,7 @@ public:
             jobs[job_id].code_location = code_location;
         }
         
-         log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Stack Memory Units Allocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
+         log<< "Time unit: "<< current_time_unit << " Location: " << jobs[job_id].stack_location <<" Job ID: "<< job_id<< " Stack Memory Units Allocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
         
         int job_group_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
         
@@ -506,7 +507,7 @@ public:
                 jobs[job_id].heap[i].heap_location = heap_location;
             }
             
-            log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Allocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
+            log<< "Time unit: "<< current_time_unit << " Location: " << jobs[job_id].heap[i].heap_location <<" Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Allocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
             
             i++;
         }
@@ -528,11 +529,11 @@ public:
           // deallocate (unit of work concept), then throw again to main
           if (jobs[job_id].stack_location != -1) {
               system.freeFF(jobs[job_id].stack_location, jobs[job_id].stack_memory_units_allocated);
-               log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Stack Memory Units Deallocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
+              log<< "Time unit: "<< current_time_unit << " Location: " << jobs[job_id].stack_location <<" Job ID: "<< job_id<< " Stack Memory Units Deallocated: "<<jobs[job_id].stack_memory_units_allocated<< endl;
           }
           if (jobs[job_id].code_location != -1) {
               system.freeFF(jobs[job_id].code_location, jobs[job_id].code_memory_units_allocated);
-               log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Code Memory Units Deallocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
+               log<< "Time unit: "<< current_time_unit<< " Location: " << jobs[job_id].code_location <<" Job ID: "<< job_id<< " Code Memory Units Deallocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
           }
           
           int job_group_size = int(jobs[job_id].heap.size())/jobs[job_id].running_time;
@@ -541,7 +542,7 @@ public:
           for (int i =jobs[job_id].current_heap_element_group; i < size; i++) {
               if (jobs[job_id].heap[i].heap_location != -1) {
                   system.freeFF(jobs[job_id].heap[i].heap_location, jobs[job_id].heap[i].heap_memory_units_allocated);
-                  log<< "Time unit: "<< current_time_unit<<" Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Deallocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
+                  log<< "Time unit: "<< current_time_unit<<" Location: " << jobs[job_id].heap[i].heap_location << " Job ID: "<< job_id<< " Heap Element ID: "<<i<< " Memory Units Deallocated: "<<jobs[job_id].heap[i].heap_memory_units_allocated << endl;
               }
           }
           
