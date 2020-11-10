@@ -550,7 +550,7 @@ public:
           }
           
           
-          throw invalid_argument("The simulation has ended!");
+          throw invalid_argument("The Memory Allocation System Ran out of Memory!");
           
         }
         
