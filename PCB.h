@@ -595,11 +595,9 @@ public:
         return jobs[job_id].type;
     }
     
-
-    ~PCB(){
-        log.close();
-        
-    }
+	void close_log() {
+		log.close();
+	}
 };
 
 
