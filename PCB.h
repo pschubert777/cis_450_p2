@@ -64,7 +64,7 @@ public:
     // Pre-condition: a valid vector of type job struct
     // Post-condition: creats new jobs with unique id's and creats for each job a job struct (stored in queue) and job_details struct (stored in jobs struct private variable), and witin the job_details a vector of heap info to detail the allocation and arrival time of the heap elements
     // Author: Peter Schubert
-    void job_assignments(vector<job> &queue){
+    void job_assignments(priority_queue<job, vector<job>, comparator> & queue){
         
         int i =0; // number of jobs
         int tmp_small=num_small_jobs, tmp_medium=num_medium_jobs, tmp_large=num_large_jobs;
@@ -116,7 +116,7 @@ public:
             
             
             jobs.push_back(new_job);
-            queue.push_back(new_job_for_queue);
+            queue.push(new_job_for_queue);
             i++;
         }
     }
@@ -453,7 +453,7 @@ public:
             }
             
             
-            throw invalid_argument("The simulation has ended!");
+            throw invalid_argument("The Memory Allocation System has ran out of memory!");
         }
        
      
@@ -595,9 +595,9 @@ public:
         return jobs[job_id].type;
     }
     
-	void close_log(){
-		 log.close();
-	}
+    void close_log(){
+         log.close();
+    }
 };
 
 
