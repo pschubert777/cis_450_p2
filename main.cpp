@@ -59,7 +59,7 @@ int request_sim_duration(const vector<double> job_distro) {
 
 	num_small = (num_jobs * (job_distro[0] / 100));
 	num_medium = (num_jobs * (job_distro[1] / 100));
-	num_medium = (num_jobs * (job_distro[2] / 100));
+	num_large = (num_jobs * (job_distro[2] / 100));
 
 	while (num_small % 1 != 0 && num_medium % 1 != 0 && num_large % 1 != 0) {
 		cout << "The distribution did not result whole values for the amount of jobs. Please enter a new distribution: ";
@@ -73,7 +73,7 @@ int request_sim_duration(const vector<double> job_distro) {
 
 		num_small = (num_jobs * (job_distro[0] / 100));
 		num_medium = (num_jobs * (job_distro[1] / 100));
-		num_medium = (num_jobs * (job_distro[2] / 100));
+		num_large = (num_jobs * (job_distro[2] / 100));
 	}
 	
 	return_duration = duration;
