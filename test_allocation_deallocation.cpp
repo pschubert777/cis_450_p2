@@ -18,17 +18,17 @@ bool compare(const job & first, const job &second) {
     }
 
 TEST(test_1_firstFit){
-    vector<job>queue;
+    priority_queue<job, vector<job>, comparator>queue;
     PCB test1(100, 0, 0, 26, 32, false, "test1.txt");
     MemoryAllocationSystem system (10000, 32, "firstFit");
     
     
     test1.job_assignments(queue);
     
-    sort(queue.begin(), queue.end(), compare);
     
-    test1.allocate_new_job(queue[0].job_id, system, queue[0].job_arrival_time);
-    test1.allocate_new_job(queue[1].job_id, system, queue[1].job_arrival_time);
+    test1.allocate_new_job(queue.top().job_id, system, queue.top().job_arrival_time);
+    queue.pop();
+    test1.allocate_new_job(queue.top.job_id, system, queue[1].job_arrival_time);
     /*1st Job */
     for (int i =0; i <50; i++) {
         test1.deallocate_heap(queue[0].job_id, i, system, queue[0].job_arrival_time);

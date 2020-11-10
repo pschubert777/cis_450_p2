@@ -151,6 +151,7 @@ string request_algorithm() {
 }
 
 // sort here by arrival time
+
 bool compare_arrival_times(job j1, job j2) {
 	return(j1.job_arrival_time < j2.job_arrival_time);
 }
@@ -160,7 +161,7 @@ bool compare_arrival_times(job j1, job j2) {
 int main() {
 	// main variables
 	double small = 0, medium = 0, large = 0, run_time;
-	vector<job>queue;
+	priority_queue<job, vector<job>, comparator>queue; 
 	int time_counter;
 	vector<int>active_jobs;
 	vector<heap_elements>active_heap_elements;
@@ -209,7 +210,7 @@ int main() {
 
 	// sort here -----------------
 	// need to sort queue here. Have to add my compare function but waiting to talk to peter becaue I need to add it into PCB i beleive and dont want merge conflicts
-	sort(queue.begin(), queue.end(), compare_arrival_times);
+	
 
 	MemoryAllocationSystem myMAS(num_memory_units, memory_unit_size, algorithm_to_run);
 	time_counter = 0;
@@ -220,19 +221,18 @@ int main() {
 				myPCB.allocate_and_return_heap_elements(active_jobs[i], myMAS, active_heap_elements, time_counter);
 			}
 
-			// 
-			for (int j = 0; j < queue.size(); j++) {
-				if (queue[j].job_arrival_time == time_counter) {
-					myPCB.allocate_new_job(queue[j].job_id, myMAS,active_jobs, active_heap_elements, time_counter);
-				}
-				else if (queue[j].job_arrival_time > time_counter) {
-					break;
-				}
-			}
+			//
+            if (!queue.empty()) {
+                while (!queue.empty() &&  queue.top().job_arrival_time == time_counter) {
+                             myPCB.allocate_new_job(queue.top().job_id, myMAS,active_jobs, active_heap_elements, time_counter);
+                             queue.pop();
+                }
+            }
+         
 		}
-		catch (invalid_argument) {
+		catch (invalid_argument &message) {
 			// log/ print something here
-			cout << "Error thrown, system ran out of memory. Ending simulation." << endl;
+            cout << message.what() << endl;
 			break;
 		}
 		
@@ -240,23 +240,40 @@ int main() {
 		// !!
 		// if running for 2000 time units print stats
 		// !!
+      
+       
+       vector<heap_elements>:: iterator i = active_heap_elements.begin();
+        while (i != active_heap_elements.end()) {
+            
+         if (myPCB.check_heap_deallocation(i->job_id, i->element_id, time_counter)) {
+                myPCB.deallocate_heap(i->job_id, i->element_id, myMAS, time_counter);
+                i=active_heap_elements.erase(i);
+            }
+         else{
+             i++;
+         }
+        }
 
-		for (int i = 0; i < active_heap_elements.size(); i++) {
-			if (myPCB.check_heap_deallocation(active_heap_elements[i].job_id, active_heap_elements[i].element_id, time_counter)) {
-				myPCB.deallocate_heap(active_heap_elements[i].job_id, active_heap_elements[i].element_id, myMAS, time_counter);
-			}
-		}
 
-		for (int i = 0; i < active_jobs.size(); i++) {
-			if (myPCB.check_job_deallocation(active_jobs[i], time_counter)) {
-				myPCB.deallocate_job(active_jobs[i], myMAS, time_counter);
-			}
-		}
-
+       // erase_heap_elements(index_heap_to_remove_from_active_list, active_heap_elements);
+        
+        vector<int>:: iterator j = active_jobs.begin();
+        while (j!=active_jobs.end()) {
+            if (myPCB.check_job_deallocation(*j, time_counter))  {
+                myPCB.deallocate_job(*j, myMAS, time_counter);
+                j=active_jobs.erase(j);
+            }
+            else{
+                j++;
+            }
+        }
+        
+      //  erase_job(index_job_to_remove_from_active_list, active_jobs);
+        ++time_counter;
 	}
 
 	// print final statistics!!
 
-
+    myPCB.close_log();
 	return 0;
 }
