@@ -255,7 +255,10 @@ int main() {
         while (i != active_heap_elements.end()) {
             
          if (myPCB.check_heap_deallocation(i->job_id, i->element_id, time_counter)) {
-                myPCB.deallocate_heap(i->job_id, i->element_id, myMAS, time_counter);
+             if (!myPCB.is_lost_object(i->job_id)) {
+                    myPCB.deallocate_heap(i->job_id, i->element_id, myMAS, time_counter);
+                 
+                }
                 i=active_heap_elements.erase(i);
             }
          else{
@@ -269,6 +272,7 @@ int main() {
         vector<int>:: iterator j = active_jobs.begin();
         while (j!=active_jobs.end()) {
             if (myPCB.check_job_deallocation(*j, time_counter))  {
+              
                 myPCB.deallocate_job(*j, myMAS, time_counter);
                 j=active_jobs.erase(j);
             }
