@@ -105,6 +105,10 @@ private:
      
     
 public:
+      // Description: constructor
+       // Pre-condition: the number of memory units to be defined(int), the memory unit size (int), the type of memory allocaation algirthm (string)
+       // Post-condition: initializes the type of memory allocation algorithm, the number of memory units, the memory unit size, initializes the memory data structure to be all -1, initializes the map to store the free locations according to the memory allocation algorithm
+       // Author: Peter Schubert
     MemoryAllocationSystem(const int &number_memory_units_in, const int &memory_unit_size_in, const string &memory_allocation_algorithm_type_in){
         // assign respective private attributes
         memory_unit_size = memory_unit_size_in;
@@ -134,16 +138,28 @@ public:
             worst_fit_memory_locations.insert(make_pair(0,num_memory_units ));
         }
     }
+    // Description: method that allocates the memory data structure with the respective job id
+    // Pre-condition: the starting point of the element to be allocated, the end point of the element to be allocated, and the job id
+    // Post-condition: the memory data structure for a certain number of elements, is filled with the job id that allocates it
+    // Author: Peter Schubert
     void fill_memory_data_structure(const int& starting_point, const int& end_point, const int&job_id){
             for (int j = starting_point; j < end_point; j++) {
                            memory_data_structure[j]=job_id;
                        }
         
     }
+    // Description: method to calculate the memory units remaining
+    // Pre-condition: the number of memor units needed and the number of memory units available
+    // Post-condition: returns the subtraction memory units available - memory units needed to get the amount of memory units free
+    // Author: Nathan Carey
     int calculate_memory_units_remaining(const int &memory_units_needed, const int&memory_units_available){
         
         return memory_units_available-memory_units_needed;
     }
+    // Description: method that allocates a code, staack, or heap element to memory based on the type of memory algorithm
+    // Pre-condition: the number of memory units and the job id
+    // Post-condition: calls a helper method firstfit, nextfit, bestfit, or worstfit, depending on the algorithm in use, allocates memory via the helper method and returns the result of that memory allocation
+    // Author: Peter Schubert
     int MallocFF(const int &num_memory_units, const int &job_id){
         
         if (memory_allocation_algorithm_type=="firstfit") {
@@ -166,6 +182,10 @@ public:
         
         return 0;
     }
+       // Description: method that allocates a code, stack, or heap element to memory based on the firstfit algorithm
+       // Pre-condition: the number of memory units and the job id
+       // Post-condition: searches for the first available open spot, starting at the beginning. If the allocation was sucessful returns the starting location of that memory, other wise returns -1
+       // Author: Peter Schubert
     int firstFit(const int &num_memory_units, const int &job_id){
         //using a for loop to find the first location available
         int location= -1;
@@ -204,6 +224,11 @@ public:
         
         return location;
     }
+        
+    // Description: method that allocates a code, stack, or heap element to memory based on the nextfit algorithm
+    // Pre-condition: the number of memory units and the job id
+    // Post-condition: searches for the next available open spot based on a pointer which keeps track where in memory the next available spot is. If the allocation was sucessful returns the starting location of that memory, other wise returns -1
+    // Author: Peter Schubert
     int nextFit(const int &num_memory_units, const int &job_id){
         bool found_spot_in_first_loop= false;
         
@@ -299,7 +324,10 @@ public:
         
         return location;
     }
-    
+    // Description: method that allocates a code, stack, or heap element to memory based on the bestfit algorithm
+    // Pre-condition: the number of memory units and the job id
+    // Post-condition: searches for the best available spot that is the smallest available spot that fits the memory being allocated. If the allocation was sucessful returns the starting location of that memory, other wise returns -1
+    // Author: Peter Schubert
     int bestFit(const int &num_memory_units, const int &job_id){
         int location = -1;
         int memory_remaining =0;
@@ -350,7 +378,10 @@ public:
         
         return location;
     }
-
+    // Description: method that allocates a code, stack, or heap element to memory based on the worstfit algorithm
+    // Pre-condition: the number of memory units and the job id
+    // Post-condition: searches for the largest available spot in the memory data structure . If the allocation was sucessful returns the starting location of that memory, other wise returns -1
+    // Author: Peter Schubert
     int worstFit(const int &num_memory_units, const int &job_id){
         int location = -1;
         int memory_remaining =0;
@@ -402,7 +433,10 @@ public:
             return location;
     }
     
-    
+    // Description: method that deallocates a code, stack, or heap element and puts that memory back into the firstfit or nextfit map that keeps track of the free space
+    // Pre-condition: the starting location and the number of memory units
+    // Post-condition: inserts the element, determines if there are any other free areas next to it and  if so merges the free spaces next to the newly inserted free space
+    // Author: Peter Schubert
     void deallocate_firstFit_nextFit(const int& starting_location, const int & num_memory_units){
         pair<int, int>new_deallocated_free_space;
         if (memory_allocation_algorithm_type=="firstfit") {
@@ -498,6 +532,10 @@ public:
         }
 
 }
+    // Description: method that deallocates a code, stack, or heap element and puts that memory back into the bestfit or worstfit map that keeps track of the free space
+       // Pre-condition: the starting location and the number of memory units
+       // Post-condition: inserts the element, determines if there are any other free areas next to it and  if so merges the free spaces next to the newly inserted free space
+       // Author: Peter Schubert
     void deallocate_bestFit_worstFit(const int& starting_location, const int & num_memory_units){
         
        pair<int, int>new_deallocated_free_space;
@@ -589,6 +627,10 @@ public:
         
     }
     
+    // Description: method that resets the memory data structurre area being deallocate to -1 and adds a new free space to the map of firstfit, nextfit, bestfit, or worstfit
+       // Pre-condition: the starting location and the number of memory units
+       // Post-condition: inserts the element, determines if there are any other free areas next to it and  if so merges the free spaces next to the newly inserted free space
+       // Author: Peter Schubert
     void freeFF(const int &starting_location, const int& num_memory_units){
         
         for (int i=starting_location; i< starting_location +num_memory_units; ++i) {
@@ -606,23 +648,41 @@ public:
         
     }
 
+    // Description: method that retrieves the number of allocations
+       // Pre-condition: the currrent time via time counter
+       // Post-condition: retrieves the number of allocation requests at that specified time
+       // Author: Nathan Carey
 	int get_number_allocations(const int &time_counter) {
 		return num_allocation_requests[time_counter];
 	}
 
+    // Description: method that retrieves the number of free requests
+        // Pre-condition: the currrent time via time counter
+        // Post-condition: retrieves the number of free requests at the specified time
+        // Author: Nathan Carey
 	int get_number_free_requests(const int &time_counter) {
 		return num_free_requests[time_counter];
 	}
-
+    // Description: method that retrieves the number of free operations
+           // Pre-condition: the currrent time via time counter
+           // Post-condition: retrieves the number of free operations done  at the specified time
+           // Author: Nathan Carey
 	int get_number_free_operations(const int &time_counter) {
 		return total_num_free_operations[time_counter];
 	}
 
-
+    // Description: method that retrieves the number of allocation operations
+    // Pre-condition: the currrent time via time counter
+    // Post-condition: retrieves the number of allocation operation at the specified time
+    // Author: Nathan Carey
 	int get_number_allocation_operations(const int &time_counter) {
 		return total_num_allocation_operations[time_counter];
 	}
-
+    
+    // Description: method that retrieves the average number of allocation operations
+    // Pre-condition: the currrent time via time counter
+    // Post-condition: retrieves the average number of allocation operation at the specified for the length of the time recorded so far
+    // Author: Nathan Carey
 	int get_number_avg_allocation_operations(const int &time_counter) {
 		int number_operations = 0, sum_operations = 0;
 
@@ -636,7 +696,10 @@ public:
 
 	}
 
-
+    // Description: method that retrieves the average number of free operations
+      // Pre-condition: the currrent time via time counter
+      // Post-condition: retrieves the average number of free operation at the specified for the length of the time recorded so far
+      // Author: Nathan Carey
 	int get_number_avg_free_operations(const int &time_counter) {
 		int number_operations = 0, sum_operations = 0;
 
@@ -648,7 +711,11 @@ public:
 
 		return (sum_operations / number_operations);
 	}
-
+    
+      // Description: method that retrieves the external fragmentation
+      // Pre-condition: the memory allocation algorithm type
+      // Post-condition: retrieves the size of the map of the corresponding memory allocation algorithm type to get the number of open space
+      // Author: Nathan Carey
 	int calculate_external_fragmentation(string &algorithm_type) {
 		int num_external_fragmentation = 0;
 
@@ -669,7 +736,10 @@ public:
 		return num_external_fragmentation;
 	}
 
-
+    // Description: method that retrieves the largest free space
+      // Pre-condition: the memory allocation algorithm type
+      // Post-condition: searches the map of the corresponding algorithm for the largest free space and returns its size as an integer
+      // Author: Nathan Carey
 	int find_largest_free_space(string &algorithm_type) {
 		int current_largest_space = 0;
 
@@ -710,7 +780,10 @@ public:
 
 		return current_largest_space;
 	}
-
+        // Description: method that retrieves the smallest free space
+         // Pre-condition: the memory allocation algorithm type
+         // Post-condition: searches the map of the corresponding algorithm for the smallest free space and returns its size as an integer
+         // Author: Nathan Carey
 	int find_smallest_free_space(string &algorithm_type) {
 		int current_smallest_space = INT_MAX;
 

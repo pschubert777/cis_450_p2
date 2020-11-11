@@ -34,6 +34,10 @@ private:
     ofstream log;
     
 public:
+    // Description: constructor
+   // Pre-condition:  valid small, medium, and large job distribution types of double
+   // Post-condition:  intializes the number of small, medium, and large jobs, total jumber of jobs, whether to run an lost object simulation (bool), and initializes the ofstream for the log file
+   // Author: Peter Schubert
     PCB(const double &small_job_distribution, const double &medium_job_distribution, const double &large_job_distribution, const int &total_run_time, const int &memory_unit_size_in, const bool& run_lost_object_simulation, const string& log_file){
         //assign total_run_time to total_running_time
         total_running_time = total_run_time;
@@ -84,7 +88,7 @@ public:
             new_job.type = assign_job_type(tmp_small, tmp_medium, tmp_large);
             
             //incrment counters if using lost object simulation
-            increment_job_type_counters_for_lost_object(new_job.type, count_num_small_jobs, num_medium_jobs, num_large_jobs);
+            increment_job_type_counters_for_lost_object(new_job.type, count_num_small_jobs, count_num_medium_jobs, count_num_large_jobs);
             
             // set the initial heap  group element starting point at index 0
             new_job.current_heap_element_group=0;
@@ -121,7 +125,7 @@ public:
         }
     }
    
-    // Description: method for  aassigning job types
+    // Description: method for  assigning job types
     // Pre-condition: the number of remaining small, medium, and large jobs
     // Post-condition: a randomly assign job type and return the type that was selected based on the number (distribution of each type remaning)
     // Author: Peter Schubert
@@ -145,13 +149,19 @@ public:
         
         return tmp_val;
     }
-    
+    // Description: method for calculating the memory unit size for stack and code sizes
+    // Pre-condition: a struct of job_details type via pass by reference
+    // Post-condition: assigns the number of memory units needed to be allocated by the code and stack
+    // Author: Peter Schubert
     void calculate_memory_unit_size_stack_and_code(job_details &new_job){
         
         new_job.code_memory_units_allocated = ceil(new_job.code_size/double(memory_unit_size));
         new_job.stack_memory_units_allocated= ceil(new_job.stack_size/double(memory_unit_size));
     }
-    
+    // Description: method for determining if a job is a lost object
+    // Pre-condition: a new job of type job_details and the number of current small, medium, and large jobs
+    // Post-condition: every 100th job of a certain type if running the lost object simulation is created into a lost object job, in which all of its heap elements are not deallocated when finished running
+    // Author: Peter Schubert
     void determine_if_job_is_lost_object(job_details &new_job, const int& num_small_jobs, const int& num_medium_jobs, const int& num_large_jobs){
         
         if (lost_object_simulation && new_job.type== small && num_small_jobs%100 ==0 && num_small_jobs >0 ) {
@@ -167,6 +177,10 @@ public:
         }
         
     }
+    // Description: method for  aassigning job types
+    // Pre-condition: the number of remaining small, medium, and large jobs
+    // Post-condition: a randomly assign job type and return the type that was selected based on the number (distribution of each type remaning)
+    // Author: Peter Schubert
     void increment_job_type_counters_for_lost_object(const job_type &type, int &num_small_jobs, int&num_medium_jobs, int &num_large_jobs ){
         
         if (lost_object_simulation && type ==small) {
@@ -407,7 +421,10 @@ public:
 
          }
      }
-    
+    // Description: method for allocating and returning the heap elements to the active heap elements list
+    // Pre-condition: the job id of the heap elements, memory allocation system class, vector of active heap elements, the current time, and the int for the number of heap allocations
+    // Post-condition: the newly allocated heap elements are added to the active heap elements list and the heap elements are allocated to the Memory Allocation System
+    // Author: Peter Schubert
     void allocate_and_return_heap_elements(const int& job_id, MemoryAllocationSystem &system, vector<heap_elements> & active_heap_jobs ,const int &current_time_unit, int &count_heap_allocations){
           // ***NEED TO FINISH try catch block if no memory***
        
@@ -462,7 +479,10 @@ public:
         
         
     }
-    
+    // Description: method for allocating and returning the code, stack, and heap elements to the active jobs and  heap elements list
+       // Pre-condition: the job id of the job to be allocated, memory allocation system class, vector of active jobs, vector of active heap elements, the current time, and the current time
+       // Post-condition: the newly allocated code, stack and heap elements are allocated to the Memory Allocation System and the job is added to the active jobs list, and the heap elements are added to the active heap elements list
+       // Author: Peter Schubert
     void allocate_new_job(const int& job_id, MemoryAllocationSystem &system,vector<int> &active_jobs, vector<heap_elements> & active_heap_jobs, const int &current_time_unit){
         try {
             
@@ -562,6 +582,10 @@ public:
         
         
     }
+    // Description: method for deallocating a job (stack and code elements)
+    // Pre-condition: the job id to be deallocated, the Memory Allocation System, and the current time
+    // Post-condition: the job code and stack elements are removed from the Memory Allocation system,
+    // Author: Peter Schubert
     void deallocate_job(const int& job_id,  MemoryAllocationSystem &system, const int &current_time_unit){
         
         
@@ -574,32 +598,62 @@ public:
          log<< "Time unit: "<< current_time_unit << " Location: " << jobs[job_id].code_location <<" Job ID: "<< job_id<< " Code Memory Units Deallocated:  "<<jobs[job_id].code_memory_units_allocated<< endl;
         
     }
+    
+    // Description: method for checking whether a  heap element is ready for deallocation
+    // Pre-condition: the job id to be deallocated, the heap element id and the current time
+    // Post-condition: returns whether the lifetime +arrival time of the heap emement is one less than the current time and is ready for deallocation
+    // Author: Peter Schubert
     bool check_heap_deallocation(const int &job_id, const int&heap_element_id, const int& current_time){
         
         return  jobs[job_id].heap[heap_element_id].arrival_time+jobs[job_id].heap[heap_element_id].life_time == current_time+1;
     }
+    
+    // Description: method for checking whether a  job  is ready for deallocation
+   // Pre-condition: the job id to be deallocated and the current time
+    // Post-condition: returns whether the lifetime +arrival time of the job is one less than the current time and is ready for deallocation
+    // Author: Peter Schubert
     bool check_job_deallocation(const int &job_id, const int& current_time){
         
         return jobs[job_id].job_arrival_time +jobs[job_id].running_time == current_time+1;
     }
     
+    // Description: method retrieves the stack allocated
+    // Pre-condition: the job id to retrieve the stack allocated
+     // Post-condition: returns a pair of the stack size of the job and the memory units allocated to that stack element
+     // Author: Peter Schubert
     pair<int, int> retrieve_stack_allocated(const int &job_id){
         
         return make_pair(jobs[job_id].stack_size, jobs[job_id].stack_memory_units_allocated);
     }
+    // Description: method retrieves the code allocated
+    // Pre-condition: the job id to retrieve the code allocated
+   // Post-condition: returns a pair of the code size of the job and the memory units allocated to that code element
+    // Author: Peter Schubert
     pair<int, int> retrieve_code_allocated(const int &job_id){
            
            return make_pair(jobs[job_id].code_size, jobs[job_id].code_memory_units_allocated);
        }
+    // Description: method retrieves the heap element  allocated
+     // Pre-condition: the job id, and the heap element id to retrieve the heap element allocated
+    // Post-condition: returns a pair of the heap element size  and the memory units allocated to that heap element
+     // Author: Peter Schubert
     pair<int, int> retrieve_heap_element_allocated(const int &job_id, const int &heap_element_id){
               
         return make_pair(jobs[job_id].heap[heap_element_id].allocation, jobs[job_id].heap[heap_element_id].heap_memory_units_allocated);
     }
+    // Description: method retrieves the job type of a job
+     // Pre-condition: the job id
+    // Post-condition: returns an enumeration of the job type
+     // Author: Peter Schubert
     job_type get_job_type(int job_id){
         
         return jobs[job_id].type;
     }
 
+    // Description: method for retrieving the allocated stack and code memory units, Statistics helper method
+     // Pre-condition:  valid job id and the memory unit size
+     // Post-condition: retrieves the total stack and code memory units allocated in the system
+     // Author: Nathan Carey
 	// Statistics helper methods
 	int retrieve_allocated_memory(const int &job_id, const int &mem_unit_size) {
 
@@ -613,10 +667,18 @@ public:
 		return total_memory;
 	}
 
+    // Description: method for retrieving the allocated heap memory units, Statistics helper method
+        // Pre-condition:  valid job id, heap element id and the memory unit size
+        // Post-condition: retrieves the heap memory allocated for on heap element
+        // Author: Nathan Carey
 	int retrieve_allocated_heap_memory(const int &job_id, const int &heap_element_id, const int &mem_unit_size) {
 		return jobs[job_id].heap[heap_element_id].heap_memory_units_allocated * mem_unit_size;
 	}
 
+    // Description: method for retrieving the required memory for code and stack elements of a job
+        // Pre-condition:  valid job id and heap element id
+        // Post-condition: retrieves the total memory required for code and stack elements
+        // Author: Nathan Carey
 	int retrieve_required_memory(const int &job_id, const int &heap_element_id) {
 
 		int total_memory = 0;
@@ -626,16 +688,30 @@ public:
 
 		return total_memory;
 	}
-
+       // Description: method for retrieving the number of each type of job
+        // Pre-condition:  a valid job holder vector
+        // Post-condition: retrieves the number of each type of small, medium, and large job
+        // Author: Nathan Carey
 	vector<int> retrieve_number_of_jobs(vector<int> &job_holder) {
 		job_holder[0] = num_small_jobs;
 		job_holder[1] = num_medium_jobs;
 		job_holder[2] = num_large_jobs;
 		return job_holder;
 	}
-    
+    // Description: method close the ofstream of the log file
+       // Pre-condition: a valid log file open
+       // Post-condition: the ofstream for a log file is closed
+       // Author: Peter Schubert
     void close_log(){
          log.close();
+    }
+    
+       // Description: method for determining if a job is a lost object
+       // Pre-condition: the job id of th job
+       // Post-condition: returns the boolean attribute of the job that indicates whether or not this job is a lost object
+       // Author: Peter Schubert
+    bool is_lost_object(const int &job_id){
+        return jobs[job_id].lost_objects;
     }
 };
 
